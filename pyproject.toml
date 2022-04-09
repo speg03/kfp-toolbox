@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kfp-toolbox"
-version = "0.0.0"
+version = "0.0.1"
 description = "The toolbox for kfp (Kubeflow Pipelines)"
 authors = ["Takahiro Yano <speg03@gmail.com>"]
 
@@ -12,7 +12,7 @@ repository = "https://github.com/speg03/kfp-toolbox"
 
 keywords = ["kfp", "kubeflow", "pipelines"]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
