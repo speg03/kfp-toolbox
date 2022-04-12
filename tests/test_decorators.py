@@ -96,3 +96,30 @@ def test_spec_caching(tmp_path):
     task = pipeline_json["pipelineSpec"]["root"]["dag"]["tasks"]["echo"]
 
     assert "enableCache" not in task["cachingOptions"]
+
+
+def test_spec_with_multiple_decorators(tmp_path):
+    default_spec = spec(cpu="2", memory="16G")
+
+    @spec(cpu="1")
+    @default_spec
+    @dsl.component
+    def echo() -> str:
+        return "hello, world"
+
+    @dsl.pipeline(name="echo-pipeline")
+    def echo_pipeline():
+        echo()
+
+    pipeline_path = os.fspath(tmp_path / "pipeline.json")
+    compiler.Compiler().compile(pipeline_func=echo_pipeline, package_path=pipeline_path)
+
+    with open(pipeline_path, "r") as f:
+        pipeline_json = json.load(f)
+
+    container = pipeline_json["pipelineSpec"]["deploymentSpec"]["executors"][
+        "exec-echo"
+    ]["container"]
+
+    assert container["resources"]["cpuLimit"] == 1.0
+    assert container["resources"]["memoryLimit"] == 16.0

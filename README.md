@@ -41,6 +41,18 @@ component = kfp.components.load_component_from_file("path/to/component.yaml")
 component = spec(cpu="2", memory="16G")(component)
 ```
 
+If multiple `spec` decorators are stacked, the one placed further out will take precedence. For example, suppose you have created an alias `default_spec`. If you want to overwrite part of it, place a new `spec` decorator outside of the `default_spec` decorator to overwrite it.
+
+```python
+default_spec = spec(cpu="2", memory="16G")
+
+@spec(cpu="1")
+@default_spec
+@dsl.component
+def component_function():
+    ...
+```
+
 See all available options here:
 
 |option|type|description|examples|
