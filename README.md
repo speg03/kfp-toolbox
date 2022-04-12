@@ -25,7 +25,7 @@ from kfp_toolbox import spec
 
 The `spec` decorator specifies the computing resources to be used by the component.
 
-To apply this to a Python function-based component using the `component` decorator, do the following. The `spec` decorator must be positioned above the `component` decorator.
+To apply this to a Python function-based component, it must be added outside of the `component` decorator.
 
 ```python
 @spec(cpu="2", memory="16G")
@@ -34,7 +34,7 @@ def component_function():
     ...
 ```
 
-To apply to components other than Python function-based components, use as a function.
+For other components, wrap the component as a function.
 
 ```python
 component = kfp.components.load_component_from_file("path/to/component.yaml")
