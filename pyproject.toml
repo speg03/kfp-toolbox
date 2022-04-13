@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kfp-toolbox"
-version = "0.1.0"
+version = "0.1.1"
 description = "The toolbox for kfp (Kubeflow Pipelines SDK)"
 authors = ["Takahiro Yano <speg03@gmail.com>"]
 
