@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from typing import Dict, Mapping, Optional, Union
+from typing import Callable, Dict, Mapping, Optional, Union
 
 ParameterValue = Union[int, float, str]
 
@@ -8,7 +8,7 @@ ParameterValue = Union[int, float, str]
 @dataclass
 class Parameter:
     name: str
-    type: str
+    type: Callable
     default: Optional[ParameterValue] = None
 
 
@@ -27,6 +27,19 @@ def extract_pipeline_parameters(package_path: str) -> Dict[str, Parameter]:
             )
         return value
 
+    def _type_function_from_name(type_name: str) -> Callable:
+        if type_name == "INT":
+            type_function = int
+        elif type_name == "DOUBLE":
+            type_function = float
+        elif type_name == "STRING":
+            type_function = str
+        else:
+            raise ValueError(
+                f"Unknown type: {type_name}, Expected: INT, DOUBLE or STRING"
+            )
+        return type_function
+
     with open(package_path, "r") as f:
         pipeline = json.load(f)
 
@@ -37,7 +50,8 @@ def extract_pipeline_parameters(package_path: str) -> Dict[str, Parameter]:
         .get("parameters", {})
     )
     parameters = {
-        k: Parameter(name=k, type=v["type"]) for k, v in input_definitions.items()
+        k: Parameter(name=k, type=_type_function_from_name(v["type"]))
+        for k, v in input_definitions.items()
     }
 
     runtime_config = pipeline.get("runtimeConfig", {}).get("parameters", {})

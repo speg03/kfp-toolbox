@@ -1,4 +1,3 @@
-import json
 import os
 from typing import Dict, List
 
@@ -25,11 +24,11 @@ def test_extract_pipeline_parameters(tmp_path):
     parameters = extract_pipeline_parameters(pipeline_path)
 
     assert len(parameters) == 5
-    assert parameters["i"] == Parameter(name="i", type="INT", default=None)
-    assert parameters["n"] == Parameter(name="n", type="INT", default=0)
-    assert parameters["f"] == Parameter(name="f", type="DOUBLE", default=1.0)
-    assert parameters["s"] == Parameter(name="s", type="STRING", default="value")
-    assert parameters["b"] == Parameter(name="b", type="STRING", default="False")
+    assert parameters["i"] == Parameter(name="i", type=int, default=None)
+    assert parameters["n"] == Parameter(name="n", type=int, default=0)
+    assert parameters["f"] == Parameter(name="f", type=float, default=1.0)
+    assert parameters["s"] == Parameter(name="s", type=str, default="value")
+    assert parameters["b"] == Parameter(name="b", type=str, default="False")
 
 
 def test_extract_pipeline_parameters_with_struct_parameter(tmp_path):
@@ -47,12 +46,8 @@ def test_extract_pipeline_parameters_with_struct_parameter(tmp_path):
     parameters = extract_pipeline_parameters(pipeline_path)
 
     assert len(parameters) == 2
-    assert parameters["array"] == Parameter(
-        name="array", type="STRING", default="[1, 2, 3]"
-    )
-    assert parameters["data"] == Parameter(
-        name="data", type="STRING", default='{"a": 1}'
-    )
+    assert parameters["array"] == Parameter(name="array", type=str, default="[1, 2, 3]")
+    assert parameters["data"] == Parameter(name="data", type=str, default='{"a": 1}')
 
 
 def test_extract_pipeline_parameters_with_no_parameters(tmp_path):
@@ -72,18 +67,72 @@ def test_extract_pipeline_parameters_with_no_parameters(tmp_path):
     assert parameters == {}
 
 
-def test_extract_pipeline_parameters_with_unknown_parameter(tmp_path):
-    pipeline = json.dumps(
+def test_extract_pipeline_parameters_with_unknown_type(tmp_path):
+    pipeline = """
         {
             "pipelineSpec": {
-                "root": {"inputDefinitions": {"parameters": {"v": {"type": "unknown"}}}}
+                "root": {
+                    "inputDefinitions": {
+                        "parameters": {
+                            "v": {
+                                "type": "unknown"
+                            }
+                        }
+                    }
+                }
             },
-            "runtimeConfig": {"parameters": {"v": {"unknownValue": None}}},
+            "runtimeConfig": {
+                "parameters": {
+                    "v": {
+                        "stringValue": ""
+                    }
+                }
+            }
         }
-    )
+    """
     pipeline_path = os.fspath(tmp_path / "pipeline.json")
     with open(pipeline_path, "w") as f:
         f.write(pipeline)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as exc_info:
         extract_pipeline_parameters(pipeline_path)
+
+    assert str(exc_info.value) == (
+        "Unknown type: unknown, Expected: INT, DOUBLE or STRING"
+    )
+
+
+def test_extract_pipeline_parameters_with_unknown_value(tmp_path):
+    pipeline = """
+        {
+            "pipelineSpec": {
+                "root": {
+                    "inputDefinitions": {
+                        "parameters": {
+                            "v": {
+                                "type": "STRING"
+                            }
+                        }
+                    }
+                }
+            },
+            "runtimeConfig": {
+                "parameters": {
+                    "v": {
+                        "unknownValue": ""
+                    }
+                }
+            }
+        }
+    """
+    pipeline_path = os.fspath(tmp_path / "pipeline.json")
+    with open(pipeline_path, "w") as f:
+        f.write(pipeline)
+
+    with pytest.raises(ValueError) as exc_info:
+        extract_pipeline_parameters(pipeline_path)
+
+    assert str(exc_info.value) == (
+        "Unknown config: {'unknownValue': ''}, "
+        "Expected: intValue, doubleValue or stringValue"
+    )
