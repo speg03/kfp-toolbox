@@ -43,18 +43,28 @@ def extract_pipeline_parameters(package_path: str) -> Dict[str, Parameter]:
     with open(package_path, "r") as f:
         pipeline = json.load(f)
 
+    if (
+        "pipelineSpec" not in pipeline
+        or "runtimeConfig" not in pipeline
+        or "root" not in pipeline["pipelineSpec"]
+    ):
+        raise ValueError(
+            "Expected JSON schema: "
+            '{"pipelineSpec": {"root": ...}, "runtimeConfig": ...}'
+        )
+
     input_definitions = (
-        pipeline.get("pipelineSpec", {})
-        .get("root", {})
+        pipeline["pipelineSpec"]["root"]
         .get("inputDefinitions", {})
         .get("parameters", {})
     )
+
     parameters = {
         k: Parameter(name=k, type=_type_function_from_name(v["type"]))
         for k, v in input_definitions.items()
     }
 
-    runtime_config = pipeline.get("runtimeConfig", {}).get("parameters", {})
+    runtime_config = pipeline["runtimeConfig"].get("parameters", {})
     for k, v in runtime_config.items():
         parameters[k].default = _default_value(v)
 

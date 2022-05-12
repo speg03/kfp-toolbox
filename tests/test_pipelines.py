@@ -136,3 +136,21 @@ def test_extract_pipeline_parameters_with_unknown_value(tmp_path):
         "Unknown config: {'unknownValue': ''}, "
         "Expected: intValue, doubleValue or stringValue"
     )
+
+
+def test_extract_pipeline_parameters_with_invalid_schema(tmp_path):
+    pipeline = """
+        {
+            "pipelineSpec": {}
+        }
+    """
+    pipeline_path = os.fspath(tmp_path / "pipeline.json")
+    with open(pipeline_path, "w") as f:
+        f.write(pipeline)
+
+    with pytest.raises(ValueError) as exc_info:
+        extract_pipeline_parameters(pipeline_path)
+
+    assert str(exc_info.value) == (
+        'Expected JSON schema: {"pipelineSpec": {"root": ...}, "runtimeConfig": ...}'
+    )
