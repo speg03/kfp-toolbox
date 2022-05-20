@@ -4,53 +4,51 @@ from typing import Dict, List
 import pytest
 from kfp.v2 import compiler, dsl
 
-from kfp_toolbox.pipelines import Parameter, extract_pipeline_parameters
+from kfp_toolbox.pipelines import Parameter, load_pipeline_from_file
 
 
-def test_extract_pipeline_parameters(tmp_path):
+def test_load_pipeline_from_file(tmp_path):
     @dsl.component
     def echo() -> str:
         return "hello, world"
 
     @dsl.pipeline(name="echo-pipeline")
     def echo_pipeline(
-        i: int, n: int = 0, f: float = 1.0, s: str = "value", b: bool = False
+        no_default_param: int,
+        int_param: int = 1,
+        float_param: float = 1.5,
+        str_param: str = "string_value",
+        bool_param: bool = True,
+        list_param: List[int] = [1, 2, 3],
+        dict_param: Dict[str, int] = {"key": 4},
     ):
         echo()
 
     pipeline_path = os.fspath(tmp_path / "pipeline.json")
     compiler.Compiler().compile(pipeline_func=echo_pipeline, package_path=pipeline_path)
 
-    parameters = extract_pipeline_parameters(pipeline_path)
-
-    assert len(parameters) == 5
-    assert parameters["i"] == Parameter(name="i", type=int, default=None)
-    assert parameters["n"] == Parameter(name="n", type=int, default=0)
-    assert parameters["f"] == Parameter(name="f", type=float, default=1.0)
-    assert parameters["s"] == Parameter(name="s", type=str, default="value")
-    assert parameters["b"] == Parameter(name="b", type=str, default="False")
-
-
-def test_extract_pipeline_parameters_with_struct_parameter(tmp_path):
-    @dsl.component
-    def echo() -> str:
-        return "hello, world"
-
-    @dsl.pipeline(name="echo-pipeline")
-    def echo_pipeline(array: List[int] = [1, 2, 3], data: Dict[str, int] = {"a": 1}):
-        echo()
-
-    pipeline_path = os.fspath(tmp_path / "pipeline.json")
-    compiler.Compiler().compile(pipeline_func=echo_pipeline, package_path=pipeline_path)
-
-    parameters = extract_pipeline_parameters(pipeline_path)
-
-    assert len(parameters) == 2
-    assert parameters["array"] == Parameter(name="array", type=str, default="[1, 2, 3]")
-    assert parameters["data"] == Parameter(name="data", type=str, default='{"a": 1}')
+    pipeline = load_pipeline_from_file(pipeline_path)
+    assert pipeline.name == "echo-pipeline"
+    assert len(pipeline.parameters) == 7
+    assert Parameter(name="no_default_param", type=int) in pipeline.parameters
+    assert Parameter(name="int_param", type=int, default=1) in pipeline.parameters
+    assert Parameter(name="float_param", type=float, default=1.5) in pipeline.parameters
+    assert (
+        Parameter(name="str_param", type=str, default="string_value")
+        in pipeline.parameters
+    )
+    assert Parameter(name="bool_param", type=str, default="True") in pipeline.parameters
+    assert (
+        Parameter(name="list_param", type=str, default="[1, 2, 3]")
+        in pipeline.parameters
+    )
+    assert (
+        Parameter(name="dict_param", type=str, default='{"key": 4}')
+        in pipeline.parameters
+    )
 
 
-def test_extract_pipeline_parameters_with_no_parameters(tmp_path):
+def test_load_pipeline_from_file_with_no_parameters(tmp_path):
     @dsl.component
     def echo() -> str:
         return "hello, world"
@@ -62,32 +60,15 @@ def test_extract_pipeline_parameters_with_no_parameters(tmp_path):
     pipeline_path = os.fspath(tmp_path / "pipeline.json")
     compiler.Compiler().compile(pipeline_func=echo_pipeline, package_path=pipeline_path)
 
-    parameters = extract_pipeline_parameters(pipeline_path)
+    pipeline = load_pipeline_from_file(pipeline_path)
+    assert pipeline.name == "echo-pipeline"
+    assert len(pipeline.parameters) == 0
 
-    assert parameters == {}
 
-
-def test_extract_pipeline_parameters_with_unknown_type(tmp_path):
+def test_load_pipeline_from_file_with_invalid_schema(tmp_path):
     pipeline = """
         {
-            "pipelineSpec": {
-                "root": {
-                    "inputDefinitions": {
-                        "parameters": {
-                            "v": {
-                                "type": "unknown"
-                            }
-                        }
-                    }
-                }
-            },
-            "runtimeConfig": {
-                "parameters": {
-                    "v": {
-                        "stringValue": ""
-                    }
-                }
-            }
+            "invalid_schema": {}
         }
     """
     pipeline_path = os.fspath(tmp_path / "pipeline.json")
@@ -95,62 +76,6 @@ def test_extract_pipeline_parameters_with_unknown_type(tmp_path):
         f.write(pipeline)
 
     with pytest.raises(ValueError) as exc_info:
-        extract_pipeline_parameters(pipeline_path)
+        load_pipeline_from_file(pipeline_path)
 
-    assert str(exc_info.value) == (
-        "Unknown type: unknown, Expected: INT, DOUBLE or STRING"
-    )
-
-
-def test_extract_pipeline_parameters_with_unknown_value(tmp_path):
-    pipeline = """
-        {
-            "pipelineSpec": {
-                "root": {
-                    "inputDefinitions": {
-                        "parameters": {
-                            "v": {
-                                "type": "STRING"
-                            }
-                        }
-                    }
-                }
-            },
-            "runtimeConfig": {
-                "parameters": {
-                    "v": {
-                        "unknownValue": ""
-                    }
-                }
-            }
-        }
-    """
-    pipeline_path = os.fspath(tmp_path / "pipeline.json")
-    with open(pipeline_path, "w") as f:
-        f.write(pipeline)
-
-    with pytest.raises(ValueError) as exc_info:
-        extract_pipeline_parameters(pipeline_path)
-
-    assert str(exc_info.value) == (
-        "Unknown config: {'unknownValue': ''}, "
-        "Expected: intValue, doubleValue or stringValue"
-    )
-
-
-def test_extract_pipeline_parameters_with_invalid_schema(tmp_path):
-    pipeline = """
-        {
-            "pipelineSpec": {}
-        }
-    """
-    pipeline_path = os.fspath(tmp_path / "pipeline.json")
-    with open(pipeline_path, "w") as f:
-        f.write(pipeline)
-
-    with pytest.raises(ValueError) as exc_info:
-        extract_pipeline_parameters(pipeline_path)
-
-    assert str(exc_info.value) == (
-        'Expected JSON schema: {"pipelineSpec": {"root": ...}, "runtimeConfig": ...}'
-    )
+    assert str(exc_info.value) == f"invalid schema: {pipeline_path}"
