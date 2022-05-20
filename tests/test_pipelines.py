@@ -2,9 +2,53 @@ import os
 from typing import Dict, List
 
 import pytest
+from kfp import compiler as compiler_v1
+from kfp.dsl import PipelineExecutionMode
 from kfp.v2 import compiler, dsl
 
 from kfp_toolbox.pipelines import Parameter, load_pipeline_from_file
+
+
+def test_load_pipeline_from_file_v1(tmp_path):
+    @dsl.component
+    def echo() -> str:
+        return "hello, world"
+
+    @dsl.pipeline(name="echo-pipeline")
+    def echo_pipeline(
+        no_default_param: int,
+        int_param: int = 1,
+        float_param: float = 1.5,
+        str_param: str = "string_value",
+        bool_param: bool = True,
+        list_param: List[int] = [1, 2, 3],
+        dict_param: Dict[str, int] = {"key": 4},
+    ):
+        echo()
+
+    pipeline_path = os.fspath(tmp_path / "pipeline.yaml")
+    compiler_v1.Compiler(mode=PipelineExecutionMode.V2_COMPATIBLE).compile(
+        pipeline_func=echo_pipeline, package_path=pipeline_path
+    )
+    pipeline = load_pipeline_from_file(pipeline_path)
+
+    no_default_param = Parameter(name="no_default_param", type=int)
+    int_param = Parameter(name="int_param", type=int, default=1)
+    float_param = Parameter(name="float_param", type=float, default=1.5)
+    str_param = Parameter(name="str_param", type=str, default="string_value")
+    bool_param = Parameter(name="bool_param", type=str, default="True")
+    list_param = Parameter(name="list_param", type=str, default="[1, 2, 3]")
+    dict_param = Parameter(name="dict_param", type=str, default='{"key": 4}')
+
+    assert pipeline.name == "echo-pipeline"
+    assert len(pipeline.parameters) == 7
+    assert no_default_param in pipeline.parameters
+    assert int_param in pipeline.parameters
+    assert float_param in pipeline.parameters
+    assert str_param in pipeline.parameters
+    assert bool_param in pipeline.parameters
+    assert list_param in pipeline.parameters
+    assert dict_param in pipeline.parameters
 
 
 def test_load_pipeline_from_file(tmp_path):
@@ -26,26 +70,44 @@ def test_load_pipeline_from_file(tmp_path):
 
     pipeline_path = os.fspath(tmp_path / "pipeline.json")
     compiler.Compiler().compile(pipeline_func=echo_pipeline, package_path=pipeline_path)
+    pipeline = load_pipeline_from_file(pipeline_path)
+
+    no_default_param = Parameter(name="no_default_param", type=int)
+    int_param = Parameter(name="int_param", type=int, default=1)
+    float_param = Parameter(name="float_param", type=float, default=1.5)
+    str_param = Parameter(name="str_param", type=str, default="string_value")
+    bool_param = Parameter(name="bool_param", type=str, default="True")
+    list_param = Parameter(name="list_param", type=str, default="[1, 2, 3]")
+    dict_param = Parameter(name="dict_param", type=str, default='{"key": 4}')
+
+    assert pipeline.name == "echo-pipeline"
+    assert len(pipeline.parameters) == 7
+    assert no_default_param in pipeline.parameters
+    assert int_param in pipeline.parameters
+    assert float_param in pipeline.parameters
+    assert str_param in pipeline.parameters
+    assert bool_param in pipeline.parameters
+    assert list_param in pipeline.parameters
+    assert dict_param in pipeline.parameters
+
+
+def test_load_pipeline_from_file_with_no_parameters_v1(tmp_path):
+    @dsl.component
+    def echo() -> str:
+        return "hello, world"
+
+    @dsl.pipeline(name="echo-pipeline")
+    def echo_pipeline():
+        echo()
+
+    pipeline_path = os.fspath(tmp_path / "pipeline.yaml")
+    compiler_v1.Compiler(mode=PipelineExecutionMode.V2_COMPATIBLE).compile(
+        pipeline_func=echo_pipeline, package_path=pipeline_path
+    )
 
     pipeline = load_pipeline_from_file(pipeline_path)
     assert pipeline.name == "echo-pipeline"
-    assert len(pipeline.parameters) == 7
-    assert Parameter(name="no_default_param", type=int) in pipeline.parameters
-    assert Parameter(name="int_param", type=int, default=1) in pipeline.parameters
-    assert Parameter(name="float_param", type=float, default=1.5) in pipeline.parameters
-    assert (
-        Parameter(name="str_param", type=str, default="string_value")
-        in pipeline.parameters
-    )
-    assert Parameter(name="bool_param", type=str, default="True") in pipeline.parameters
-    assert (
-        Parameter(name="list_param", type=str, default="[1, 2, 3]")
-        in pipeline.parameters
-    )
-    assert (
-        Parameter(name="dict_param", type=str, default='{"key": 4}')
-        in pipeline.parameters
-    )
+    assert len(pipeline.parameters) == 0
 
 
 def test_load_pipeline_from_file_with_no_parameters(tmp_path):
