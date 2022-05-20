@@ -33,9 +33,9 @@ def _type_function_from_name(type_name: str) -> Callable:
 
 
 def _actual_parameter_value(key: str, value: ParameterValue) -> ParameterValue:
-    if key == "intValue":
+    if key in {"Integer", "intValue"}:
         actual_value = int(value)
-    elif key == "doubleValue":
+    elif key in {"Float", "doubleValue"}:
         actual_value = float(value)
     else:
         actual_value = str(value)
@@ -74,13 +74,13 @@ def _create_v1_pipeline(pipeline_spec: Mapping[str, Any]) -> Pipeline:
 
     parameters = []
     for item in spec_json["inputs"]:
-        parameter_name = item["name"]
-        if parameter_name in {"pipeline-root", "pipeline-name"}:
+        if item["name"] in {"pipeline-root", "pipeline-name"}:
             continue
-        parameter_type = _type_function_from_name(item["type"])
-        parameter = Parameter(name=parameter_name, type=parameter_type)
-        if item.get("default"):
-            parameter.default = parameter_type(item["default"])
+        parameter = Parameter(
+            name=item["name"], type=_type_function_from_name(item["type"])
+        )
+        if item.get("default") is not None:
+            parameter.default = _actual_parameter_value(item["type"], item["default"])
         parameters.append(parameter)
 
     return Pipeline(name=pipeline_name, parameters=parameters)
