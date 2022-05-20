@@ -3,6 +3,8 @@ import os
 from dataclasses import dataclass
 from typing import Any, Callable, List, Mapping, Optional, Union
 
+import yaml
+
 ParameterValue = Union[int, float, str]
 
 
@@ -20,22 +22,22 @@ class Pipeline:
 
 
 def _type_function_from_name(type_name: str) -> Callable:
-    type_function = str
-    if type_name == "INT":
+    if type_name in {"Integer", "INT"}:
         type_function = int
-    elif type_name == "DOUBLE":
+    elif type_name in {"Float", "DOUBLE"}:
         type_function = float
+    else:
+        type_function = str
 
     return type_function
 
 
 def _actual_parameter_value(key: str, value: ParameterValue) -> ParameterValue:
-    actual_value = value
     if key == "intValue":
         actual_value = int(value)
     elif key == "doubleValue":
         actual_value = float(value)
-    elif key == "stringValue":
+    else:
         actual_value = str(value)
 
     return actual_value
@@ -63,10 +65,31 @@ def _create_pipeline(pipeline_spec: Mapping[str, Any]) -> Pipeline:
     return Pipeline(name=pipeline_name, parameters=parameters)
 
 
+def _create_v1_pipeline(pipeline_spec: Mapping[str, Any]) -> Pipeline:
+    spec_json_str = pipeline_spec["metadata"]["annotations"][
+        "pipelines.kubeflow.org/pipeline_spec"
+    ]
+    spec_json = json.loads(spec_json_str)
+    pipeline_name = spec_json["name"]
+
+    parameters = []
+    for item in spec_json["inputs"]:
+        parameter_name = item["name"]
+        if parameter_name in {"pipeline-root", "pipeline-name"}:
+            continue
+        parameter_type = _type_function_from_name(item["type"])
+        parameter = Parameter(name=parameter_name, type=parameter_type)
+        if item.get("default"):
+            parameter.default = parameter_type(item["default"])
+        parameters.append(parameter)
+
+    return Pipeline(name=pipeline_name, parameters=parameters)
+
+
 def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
     filepath_str = os.fspath(filepath)
     with open(filepath_str, "r") as f:
-        pipeline_spec = json.load(f)
+        pipeline_spec = yaml.safe_load(f)
 
     if (
         "pipelineSpec" in pipeline_spec
@@ -75,6 +98,13 @@ def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
         and "runtimeConfig" in pipeline_spec
     ):
         pipeline = _create_pipeline(pipeline_spec)
+    elif (
+        "metadata" in pipeline_spec
+        and "annotations" in pipeline_spec["metadata"]
+        and "pipelines.kubeflow.org/pipeline_spec"
+        in pipeline_spec["metadata"]["annotations"]
+    ):
+        pipeline = _create_v1_pipeline(pipeline_spec)
     else:
         raise ValueError(f"invalid schema: {filepath_str}")
 
