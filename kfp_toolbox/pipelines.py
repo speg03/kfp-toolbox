@@ -1,6 +1,7 @@
 import json
+import os
 from dataclasses import dataclass
-from typing import Callable, Dict, Mapping, Optional, Union
+from typing import Any, Callable, List, Mapping, Optional, Union
 
 ParameterValue = Union[int, float, str]
 
@@ -12,60 +13,69 @@ class Parameter:
     default: Optional[ParameterValue] = None
 
 
-def extract_pipeline_parameters(package_path: str) -> Dict[str, Parameter]:
-    def _default_value(runtime_config: Mapping[str, ParameterValue]) -> ParameterValue:
-        if "intValue" in runtime_config:
-            value = int(runtime_config["intValue"])
-        elif "doubleValue" in runtime_config:
-            value = float(runtime_config["doubleValue"])
-        elif "stringValue" in runtime_config:
-            value = str(runtime_config["stringValue"])
-        else:
-            raise ValueError(
-                f"Unknown config: {runtime_config}, "
-                "Expected: intValue, doubleValue or stringValue"
-            )
-        return value
+@dataclass
+class Pipeline:
+    name: str
+    parameters: List[Parameter]
 
-    def _type_function_from_name(type_name: str) -> Callable:
-        if type_name == "INT":
-            type_function = int
-        elif type_name == "DOUBLE":
-            type_function = float
-        elif type_name == "STRING":
-            type_function = str
-        else:
-            raise ValueError(
-                f"Unknown type: {type_name}, Expected: INT, DOUBLE or STRING"
-            )
-        return type_function
 
-    with open(package_path, "r") as f:
-        pipeline = json.load(f)
+def _type_function_from_name(type_name: str) -> Callable:
+    type_function = str
+    if type_name == "INT":
+        type_function = int
+    elif type_name == "DOUBLE":
+        type_function = float
 
-    if (
-        "pipelineSpec" not in pipeline
-        or "runtimeConfig" not in pipeline
-        or "root" not in pipeline["pipelineSpec"]
-    ):
-        raise ValueError(
-            "Expected JSON schema: "
-            '{"pipelineSpec": {"root": ...}, "runtimeConfig": ...}'
-        )
+    return type_function
 
+
+def _actual_parameter_value(key: str, value: ParameterValue) -> ParameterValue:
+    actual_value = value
+    if key == "intValue":
+        actual_value = int(value)
+    elif key == "doubleValue":
+        actual_value = float(value)
+    elif key == "stringValue":
+        actual_value = str(value)
+
+    return actual_value
+
+
+def _create_pipeline(pipeline_spec: Mapping[str, Any]) -> Pipeline:
+    pipeline_name = pipeline_spec["pipelineSpec"]["pipelineInfo"]["name"]
     input_definitions = (
-        pipeline["pipelineSpec"]["root"]
+        pipeline_spec["pipelineSpec"]["root"]
         .get("inputDefinitions", {})
         .get("parameters", {})
     )
+    runtime_config = pipeline_spec["runtimeConfig"].get("parameters", {})
 
-    parameters = {
-        k: Parameter(name=k, type=_type_function_from_name(v["type"]))
-        for k, v in input_definitions.items()
-    }
+    parameters = []
+    for parameter_name, parameter_type in input_definitions.items():
+        parameter = Parameter(
+            name=parameter_name, type=_type_function_from_name(parameter_type["type"])
+        )
+        if runtime_config.get(parameter_name):
+            key, value = list(runtime_config[parameter_name].items())[0]
+            parameter.default = _actual_parameter_value(key, value)
+        parameters.append(parameter)
 
-    runtime_config = pipeline["runtimeConfig"].get("parameters", {})
-    for k, v in runtime_config.items():
-        parameters[k].default = _default_value(v)
+    return Pipeline(name=pipeline_name, parameters=parameters)
 
-    return parameters
+
+def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
+    filepath_str = os.fspath(filepath)
+    with open(filepath_str, "r") as f:
+        pipeline_spec = json.load(f)
+
+    if (
+        "pipelineSpec" in pipeline_spec
+        and "root" in pipeline_spec["pipelineSpec"]
+        and "pipelineInfo" in pipeline_spec["pipelineSpec"]
+        and "runtimeConfig" in pipeline_spec
+    ):
+        pipeline = _create_pipeline(pipeline_spec)
+    else:
+        raise ValueError(f"invalid schema: {filepath_str}")
+
+    return pipeline
