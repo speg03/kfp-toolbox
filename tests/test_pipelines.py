@@ -149,7 +149,7 @@ def test_load_pipeline_from_file_with_falsy_default_values(tmp_path):
     assert str_param in pipeline.parameters
 
 
-def test_load_pipeline_from_file_with_no_parameters_v1(tmp_path):
+def test_load_pipeline_from_file_v1_with_no_parameters(tmp_path):
     @dsl.component
     def echo() -> str:
         return "hello, world"
