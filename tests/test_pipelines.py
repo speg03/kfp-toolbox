@@ -91,6 +91,64 @@ def test_load_pipeline_from_file(tmp_path):
     assert dict_param in pipeline.parameters
 
 
+def test_load_pipeline_from_file_v1_with_falsy_default_values(tmp_path):
+    @dsl.component
+    def echo() -> str:
+        return "hello, world"
+
+    @dsl.pipeline(name="echo-pipeline")
+    def echo_pipeline(
+        int_param: int = 0,
+        float_param: float = 0.0,
+        str_param: str = "",
+    ):
+        echo()
+
+    pipeline_path = os.fspath(tmp_path / "pipeline.yaml")
+    compiler_v1.Compiler(mode=PipelineExecutionMode.V2_COMPATIBLE).compile(
+        pipeline_func=echo_pipeline, package_path=pipeline_path
+    )
+    pipeline = load_pipeline_from_file(pipeline_path)
+
+    int_param = Parameter(name="int_param", type=int, default=0)
+    float_param = Parameter(name="float_param", type=float, default=0.0)
+    str_param = Parameter(name="str_param", type=str, default="")
+
+    assert pipeline.name == "echo-pipeline"
+    assert len(pipeline.parameters) == 3
+    assert int_param in pipeline.parameters
+    assert float_param in pipeline.parameters
+    assert str_param in pipeline.parameters
+
+
+def test_load_pipeline_from_file_with_falsy_default_values(tmp_path):
+    @dsl.component
+    def echo() -> str:
+        return "hello, world"
+
+    @dsl.pipeline(name="echo-pipeline")
+    def echo_pipeline(
+        int_param: int = 0,
+        float_param: float = 0.0,
+        str_param: str = "",
+    ):
+        echo()
+
+    pipeline_path = os.fspath(tmp_path / "pipeline.json")
+    compiler.Compiler().compile(pipeline_func=echo_pipeline, package_path=pipeline_path)
+    pipeline = load_pipeline_from_file(pipeline_path)
+
+    int_param = Parameter(name="int_param", type=int, default=0)
+    float_param = Parameter(name="float_param", type=float, default=0.0)
+    str_param = Parameter(name="str_param", type=str, default="")
+
+    assert pipeline.name == "echo-pipeline"
+    assert len(pipeline.parameters) == 3
+    assert int_param in pipeline.parameters
+    assert float_param in pipeline.parameters
+    assert str_param in pipeline.parameters
+
+
 def test_load_pipeline_from_file_with_no_parameters_v1(tmp_path):
     @dsl.component
     def echo() -> str:
