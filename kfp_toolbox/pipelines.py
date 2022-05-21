@@ -3,7 +3,10 @@ import os
 from dataclasses import dataclass
 from typing import Any, Callable, List, Mapping, Optional, Union
 
+import kfp
 import yaml
+from google.auth import credentials as auth_credentials
+from google.cloud import aiplatform
 
 ParameterValue = Union[int, float, str]
 
@@ -109,3 +112,48 @@ def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
         raise ValueError(f"invalid schema: {filepath_str}")
 
     return pipeline
+
+
+def submit_pipeline_job(
+    pipeline_file: str,
+    endpoint: Optional[str] = None,
+    arguments: Optional[Mapping[str, Any]] = None,
+    run_name: Optional[str] = None,
+    experiment_name: Optional[str] = None,
+    namespace: Optional[str] = None,
+    pipeline_root: Optional[str] = None,
+    enable_caching: Optional[bool] = None,
+    service_account: Optional[str] = None,
+    encryption_spec_key_name: Optional[str] = None,
+    labels: Optional[Mapping[str, str]] = None,
+    credentials: Optional[auth_credentials.Credentials] = None,
+    project: Optional[str] = None,
+    location: Optional[str] = None,
+):
+    if endpoint:  # Kubeflow Pipelines
+        client = kfp.Client(host=endpoint)
+        client.create_run_from_pipeline_package(
+            pipeline_file=pipeline_file,
+            arguments=arguments,  # type: ignore
+            run_name=run_name,
+            experiment_name=experiment_name,
+            namespace=namespace,
+            pipeline_root=pipeline_root,
+            enable_caching=enable_caching,
+            service_account=service_account,
+        )
+    else:  # Vertex AI Pipelines
+        job = aiplatform.PipelineJob(
+            display_name=None,  # type: ignore
+            template_path=pipeline_file,
+            job_id=run_name,
+            pipeline_root=pipeline_root,
+            parameter_values=arguments,  # type: ignore
+            enable_caching=enable_caching,
+            encryption_spec_key_name=encryption_spec_key_name,
+            labels=labels,  # type: ignore
+            credentials=credentials,
+            project=project,
+            location=location,
+        )
+        job.submit()
