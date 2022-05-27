@@ -117,6 +117,10 @@ def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
 def submit_pipeline_job(
     pipeline_file: str,
     endpoint: Optional[str] = None,
+    iap_client_id: Optional[str] = None,
+    api_namespace: str = "kubeflow",
+    other_client_id: Optional[str] = None,
+    other_client_secret: Optional[str] = None,
     arguments: Optional[Mapping[str, Any]] = None,
     run_name: Optional[str] = None,
     experiment_name: Optional[str] = None,
@@ -129,9 +133,16 @@ def submit_pipeline_job(
     credentials: Optional[auth_credentials.Credentials] = None,
     project: Optional[str] = None,
     location: Optional[str] = None,
+    network: Optional[str] = None,
 ):
     if endpoint:  # Kubeflow Pipelines
-        client = kfp.Client(host=endpoint)
+        client = kfp.Client(
+            host=endpoint,
+            client_id=iap_client_id,
+            namespace=api_namespace,
+            other_client_id=other_client_id,
+            other_client_secret=other_client_secret,
+        )
         client.create_run_from_pipeline_package(
             pipeline_file=pipeline_file,
             arguments=arguments,  # type: ignore
@@ -144,7 +155,7 @@ def submit_pipeline_job(
         )
     else:  # Vertex AI Pipelines
         job = aiplatform.PipelineJob(
-            display_name=None,  # type: ignore
+            display_name=None,  # type: ignore  # will be generated
             template_path=pipeline_file,
             job_id=run_name,
             pipeline_root=pipeline_root,
@@ -156,4 +167,4 @@ def submit_pipeline_job(
             project=project,
             location=location,
         )
-        job.submit()
+        job.submit(service_account=service_account, network=network)

@@ -227,7 +227,9 @@ def test_submit_pipeline_job(mock_kfp, mock_aip):
         project=None,
         location=None,
     )
-    mock_aip.return_value.submit.assert_called_once_with()
+    mock_aip.return_value.submit.assert_called_once_with(
+        service_account=None, network=None
+    )
 
 
 @patch("google.cloud.aiplatform.PipelineJob")
@@ -241,7 +243,13 @@ def test_submit_pipeline_job_with_endpoint(mock_kfp, mock_aip):
     )
 
     mock_aip.assert_not_called()
-    mock_kfp.assert_called_once_with(host="http://localhost:8080")
+    mock_kfp.assert_called_once_with(
+        host="http://localhost:8080",
+        client_id=None,
+        namespace="kubeflow",
+        other_client_id=None,
+        other_client_secret=None,
+    )
     mock_kfp.return_value.create_run_from_pipeline_package.assert_called_once_with(
         pipeline_file="/path/to/file",
         arguments={"param": 1},
