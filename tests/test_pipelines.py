@@ -1,12 +1,17 @@
 import os
 from typing import Dict, List
+from unittest.mock import patch
 
 import pytest
 from kfp import compiler as compiler_v1
 from kfp.dsl import PipelineExecutionMode
 from kfp.v2 import compiler, dsl
 
-from kfp_toolbox.pipelines import Parameter, load_pipeline_from_file
+from kfp_toolbox.pipelines import (
+    Parameter,
+    load_pipeline_from_file,
+    submit_pipeline_job,
+)
 
 
 def test_load_pipeline_from_file_v1(tmp_path):
@@ -199,3 +204,59 @@ def test_load_pipeline_from_file_with_invalid_schema(tmp_path):
         load_pipeline_from_file(pipeline_path)
 
     assert str(exc_info.value) == f"invalid schema: {pipeline_path}"
+
+
+@patch("google.cloud.aiplatform.PipelineJob")
+@patch("kfp.Client")
+def test_submit_pipeline_job(mock_kfp, mock_aip):
+    submit_pipeline_job(
+        pipeline_file="/path/to/file", arguments={"param": 1}, run_name="test-run"
+    )
+
+    mock_kfp.assert_not_called()
+    mock_aip.assert_called_once_with(
+        display_name=None,
+        template_path="/path/to/file",
+        job_id="test-run",
+        pipeline_root=None,
+        parameter_values={"param": 1},
+        enable_caching=None,
+        encryption_spec_key_name=None,
+        labels=None,
+        credentials=None,
+        project=None,
+        location=None,
+    )
+    mock_aip.return_value.submit.assert_called_once_with(
+        service_account=None, network=None
+    )
+
+
+@patch("google.cloud.aiplatform.PipelineJob")
+@patch("kfp.Client")
+def test_submit_pipeline_job_with_endpoint(mock_kfp, mock_aip):
+    submit_pipeline_job(
+        pipeline_file="/path/to/file",
+        arguments={"param": 1},
+        run_name="test-run",
+        endpoint="http://localhost:8080",
+    )
+
+    mock_aip.assert_not_called()
+    mock_kfp.assert_called_once_with(
+        host="http://localhost:8080",
+        client_id=None,
+        namespace="kubeflow",
+        other_client_id=None,
+        other_client_secret=None,
+    )
+    mock_kfp.return_value.create_run_from_pipeline_package.assert_called_once_with(
+        pipeline_file="/path/to/file",
+        arguments={"param": 1},
+        run_name="test-run",
+        experiment_name=None,
+        namespace=None,
+        pipeline_root=None,
+        enable_caching=None,
+        service_account=None,
+    )
