@@ -1,7 +1,7 @@
 import functools
 from typing import Optional
 
-from kfp.v2.dsl import ContainerOp
+from kfp.v2 import dsl
 
 
 def spec(
@@ -15,7 +15,7 @@ def spec(
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            task: ContainerOp = func(*args, **kwargs)
+            task: dsl.ContainerOp = func(*args, **kwargs)
             if name:
                 task.set_display_name(name)
             if cpu:

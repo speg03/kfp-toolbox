@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 from kfp import compiler as compiler_v1
-from kfp.dsl import PipelineExecutionMode
+from kfp import dsl as dsl_v1
 from kfp.v2 import compiler, dsl
 
 from kfp_toolbox.pipelines import (
@@ -32,7 +32,7 @@ def test_load_pipeline_from_file_v1(tmp_path):
         echo()
 
     pipeline_path = os.fspath(tmp_path / "pipeline.yaml")
-    compiler_v1.Compiler(mode=PipelineExecutionMode.V2_COMPATIBLE).compile(
+    compiler_v1.Compiler(mode=dsl_v1.PipelineExecutionMode.V2_COMPATIBLE).compile(
         pipeline_func=echo_pipeline, package_path=pipeline_path
     )
     pipeline = load_pipeline_from_file(pipeline_path)
@@ -110,7 +110,7 @@ def test_load_pipeline_from_file_v1_with_falsy_default_values(tmp_path):
         echo()
 
     pipeline_path = os.fspath(tmp_path / "pipeline.yaml")
-    compiler_v1.Compiler(mode=PipelineExecutionMode.V2_COMPATIBLE).compile(
+    compiler_v1.Compiler(mode=dsl_v1.PipelineExecutionMode.V2_COMPATIBLE).compile(
         pipeline_func=echo_pipeline, package_path=pipeline_path
     )
     pipeline = load_pipeline_from_file(pipeline_path)
@@ -164,7 +164,7 @@ def test_load_pipeline_from_file_v1_with_no_parameters(tmp_path):
         echo()
 
     pipeline_path = os.fspath(tmp_path / "pipeline.yaml")
-    compiler_v1.Compiler(mode=PipelineExecutionMode.V2_COMPATIBLE).compile(
+    compiler_v1.Compiler(mode=dsl_v1.PipelineExecutionMode.V2_COMPATIBLE).compile(
         pipeline_func=echo_pipeline, package_path=pipeline_path
     )
 
