@@ -32,6 +32,9 @@ black = "^22.3"
 flake8 = "^4.0"
 isort = "^5.10"
 
+[tool.poetry.scripts]
+kfp-toolbox = "kfp_toolbox.cli.main:main"
+
 [tool.isort]
 profile = "black"
 
