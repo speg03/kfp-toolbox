@@ -16,4 +16,4 @@ def test_main_version():
     result = runner.invoke(main.main, ["--version"])
 
     assert result.exit_code == 0
-    assert result.output.startswith("kfp-toolbox version ")
+    assert "version" in result.output

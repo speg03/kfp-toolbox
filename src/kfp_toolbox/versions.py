@@ -6,11 +6,3 @@ except ImportError:
 kfp_toolbox_version = metadata.version("kfp-toolbox")
 kfp_version = metadata.version("kfp")
 google_cloud_aiplatform_version = metadata.version("google-cloud-aiplatform")
-
-
-def version_string() -> str:
-    return (
-        f"kfp-toolbox version {kfp_toolbox_version}\n"
-        f"kfp version {kfp_version}\n"
-        f"google-cloud-aiplatform version {google_cloud_aiplatform_version}"
-    )
