@@ -190,6 +190,18 @@ def test_load_pipeline_from_file_with_no_parameters(tmp_path):
     assert len(pipeline.parameters) == 0
 
 
+def test_load_pipeline_from_file_with_empty_file(tmp_path):
+    pipeline = ""
+    pipeline_path = os.fspath(tmp_path / "pipeline.json")
+    with open(pipeline_path, "w") as f:
+        f.write(pipeline)
+
+    with pytest.raises(ValueError) as exc_info:
+        load_pipeline_from_file(pipeline_path)
+
+    assert str(exc_info.value) == f"invalid schema: {pipeline_path}"
+
+
 def test_load_pipeline_from_file_with_invalid_schema(tmp_path):
     pipeline = """
         {
