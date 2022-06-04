@@ -17,4 +17,4 @@ from . import submit
     ),
 )
 def main():
-    pass
+    pass  # pragma: no cover
