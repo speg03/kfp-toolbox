@@ -1,7 +1,8 @@
 try:
-    from importlib.metadata import version
+    import importlib.metadata as metadata
 except ImportError:
-    from importlib_metadata import version  # type: ignore
+    import importlib_metadata as metadata  # type: ignore
 
-kfp_toolbox_version = version("kfp-toolbox")
-kfp_version = version("kfp")
+kfp_toolbox_version = metadata.version("kfp-toolbox")
+kfp_version = metadata.version("kfp")
+google_cloud_aiplatform_version = metadata.version("google-cloud-aiplatform")

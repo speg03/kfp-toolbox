@@ -95,14 +95,16 @@ def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
         pipeline_spec = yaml.safe_load(f)
 
     if (
-        "pipelineSpec" in pipeline_spec
+        isinstance(pipeline_spec, dict)
+        and "pipelineSpec" in pipeline_spec
         and "root" in pipeline_spec["pipelineSpec"]
         and "pipelineInfo" in pipeline_spec["pipelineSpec"]
         and "runtimeConfig" in pipeline_spec
     ):
         pipeline = _create_pipeline(pipeline_spec)
     elif (
-        "metadata" in pipeline_spec
+        isinstance(pipeline_spec, dict)
+        and "metadata" in pipeline_spec
         and "annotations" in pipeline_spec["metadata"]
         and "pipelines.kubeflow.org/pipeline_spec"
         in pipeline_spec["metadata"]["annotations"]
@@ -154,6 +156,10 @@ def submit_pipeline_job(
             service_account=service_account,
         )
     else:  # Vertex AI Pipelines
+        new_labels = dict(labels) if labels else {}
+        if experiment_name:
+            new_labels = {"experiment": experiment_name}
+
         job = aiplatform.PipelineJob(
             display_name=None,  # type: ignore  # will be generated
             template_path=pipeline_file,
@@ -162,7 +168,7 @@ def submit_pipeline_job(
             parameter_values=arguments,  # type: ignore
             enable_caching=enable_caching,
             encryption_spec_key_name=encryption_spec_key_name,
-            labels=labels,  # type: ignore
+            labels=new_labels,
             credentials=credentials,
             project=project,
             location=location,

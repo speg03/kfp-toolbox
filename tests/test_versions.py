@@ -1,8 +1,7 @@
-from kfp_toolbox import __version__
-from kfp_toolbox.versions import kfp_toolbox_version, kfp_version
+from kfp_toolbox import versions
 
 
 def test_versions():
-    assert kfp_toolbox_version
-    assert kfp_version
-    assert kfp_toolbox_version == __version__
+    assert versions.kfp_toolbox_version
+    assert versions.kfp_version
+    assert versions.google_cloud_aiplatform_version
