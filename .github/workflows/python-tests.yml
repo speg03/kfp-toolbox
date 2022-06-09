@@ -23,7 +23,9 @@ jobs:
           cache: "poetry"
 
       - name: Install library
-        run: poetry install --no-interaction
+        run: |
+          poetry env use ${{ matrix.python-version }}
+          poetry install --no-interaction
 
       - name: Test with pytest
         run: poetry run pytest -v ./tests
