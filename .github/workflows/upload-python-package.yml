@@ -8,18 +8,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Install poetry
-      run: pipx install poetry
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
 
-    - name: Build
-      run: poetry build
+      - name: Build
+        run: poetry build
 
-    - name: Publish
-      run: |
-        poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
-        poetry publish
+      - name: Publish
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+          poetry publish
