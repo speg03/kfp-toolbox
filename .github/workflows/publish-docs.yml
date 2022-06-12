@@ -1,0 +1,36 @@
+name: Publish Docs
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+          cache: "poetry"
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-dev --no-interaction
+          poetry run pip install -r ./docs/requirements.txt
+
+      - name: Build
+        run: |
+          poetry run sphinx-apidoc --no-toc -o ./docs/api ./src
+          poetry run sphinx-build -W -b html ./docs ./docs/_build/html
+
+      - name: Publish
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
