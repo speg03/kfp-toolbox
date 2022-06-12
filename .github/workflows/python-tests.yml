@@ -2,12 +2,11 @@ name: Python Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -17,6 +16,7 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
       - name: Set up Python ${{ matrix.python-version }}
+        id: setup-python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -24,7 +24,7 @@ jobs:
 
       - name: Install library
         run: |
-          poetry env use ${{ matrix.python-version }}
+          poetry env use ${{ steps.setup-python.outputs.python-version }}
           poetry install --no-interaction
 
       - name: Test with pytest
