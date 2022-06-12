@@ -24,7 +24,7 @@ jobs:
 
       - name: Build
         run: |
-          poetry run phinx-apidoc --no-toc -o ./docs/api ./src
+          poetry run sphinx-apidoc --no-toc -o ./docs/api ./src
           poetry run sphinx-build -W -b html ./docs ./docs/_build/html
 
       - name: Publish
