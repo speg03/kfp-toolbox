@@ -1,0 +1,29 @@
+kfp\_toolbox.cli package
+========================
+
+Submodules
+----------
+
+kfp\_toolbox.cli.main module
+----------------------------
+
+.. automodule:: kfp_toolbox.cli.main
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+kfp\_toolbox.cli.submit module
+------------------------------
+
+.. automodule:: kfp_toolbox.cli.submit
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: kfp_toolbox.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
