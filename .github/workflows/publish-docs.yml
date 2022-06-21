@@ -11,11 +11,17 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install poetry
         run: pipx install poetry
+      - name: Set up Python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+          cache: poetry
 
-      - name: Install dependencies
+      - name: Install library
         run: |
-          poetry install --no-dev --no-interaction
-          poetry run pip install -r ./docs/requirements.txt
+          poetry env use ${{ steps.setup-python.outputs.python-version }}
+          poetry install --no-interaction
 
       - name: Build
         run: |
