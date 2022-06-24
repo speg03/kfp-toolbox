@@ -60,7 +60,7 @@ def submit(
     if pipeline_file:
         pipeline = pipelines.load_pipeline_from_file(pipeline_file)
         for parameter in pipeline.parameters:
-            sanitized_name = parameter.name.replace("_", "-").lstrip("-").rstrip("-")
+            sanitized_name = parameter.name.replace("_", "-").strip("-")
             required = parameter.default is None
             parameters_group.add_argument(
                 f"--{sanitized_name}",
