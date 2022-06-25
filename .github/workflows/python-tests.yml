@@ -27,7 +27,7 @@ jobs:
           poetry env use ${{ steps.setup-python.outputs.python-version }}
           poetry install --no-interaction
 
-      - name: Test with pytest
+      - name: Test
         run: poetry run make test
 
       - name: Upload coverage reports
