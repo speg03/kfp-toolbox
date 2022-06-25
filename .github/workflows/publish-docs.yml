@@ -24,9 +24,7 @@ jobs:
           poetry install --no-interaction
 
       - name: Build
-        run: |
-          poetry run sphinx-apidoc --no-toc --output-dir=./docs/api ./src
-          poetry run sphinx-build -W -b html ./docs ./docs/_build/html
+        run: poetry run make html
 
       - name: Publish
         uses: peaceiris/actions-gh-pages@v3
