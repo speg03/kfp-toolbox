@@ -231,11 +231,11 @@ six = "*"
 
 [[package]]
 name = "google-cloud-aiplatform"
-version = "1.14.0"
+version = "1.15.0"
 description = "Vertex AI API client library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 google-api-core = {version = ">=1.31.5,<2.0.0 || >2.3.0,<3.0.0dev", extras = ["grpc"]}
@@ -248,12 +248,14 @@ protobuf = ">=3.19.0,<4.0.0dev"
 
 [package.extras]
 cloud_profiler = ["tensorboard-plugin-profile (>=2.4.0,<3.0.0dev)", "werkzeug (>=2.0.0,<2.1.0dev)", "tensorflow (>=2.4.0,<3.0.0dev)"]
-full = ["pandas (>=1.0.0)", "google-cloud-bigquery-storage", "pyarrow (>=6.0.1)", "tensorflow (>=2.3.0,<3.0.0dev)", "lit-nlp (>=0.4.0)", "pyyaml (>=5.3,<6)", "pyarrow (>=3.0.0,<8.0dev)", "explainable-ai-sdk (>=1.0.0)"]
+datasets = ["pyarrow (>=3.0.0,<8.0dev)"]
+full = ["explainable-ai-sdk (>=1.0.0)", "lit-nlp (>=0.4.0)", "urllib3 (>=1.21.1,<1.27)", "pyyaml (>=5.3,<6)", "pyarrow (>=6.0.1)", "tensorflow (>=2.3.0,<3.0.0dev)", "pandas (>=1.0.0)", "google-cloud-bigquery-storage", "pyarrow (>=3.0.0,<8.0dev)"]
 lit = ["tensorflow (>=2.3.0,<3.0.0dev)", "pandas (>=1.0.0)", "lit-nlp (>=0.4.0)", "explainable-ai-sdk (>=1.0.0)"]
 metadata = ["pandas (>=1.0.0)"]
 pipelines = ["pyyaml (>=5.3,<6)"]
+private_endpoints = ["urllib3 (>=1.21.1,<1.27)"]
 tensorboard = ["tensorflow (>=2.3.0,<3.0.0dev)"]
-testing = ["pandas (>=1.0.0)", "google-cloud-bigquery-storage", "pyarrow (>=6.0.1)", "tensorflow (>=2.3.0,<3.0.0dev)", "lit-nlp (>=0.4.0)", "pyyaml (>=5.3,<6)", "pyarrow (>=3.0.0,<8.0dev)", "explainable-ai-sdk (>=1.0.0)", "tensorboard-plugin-profile (>=2.4.0,<3.0.0dev)", "werkzeug (>=2.0.0,<2.1.0dev)", "tensorflow (>=2.4.0,<3.0.0dev)", "grpcio-testing", "pytest-xdist", "ipython"]
+testing = ["explainable-ai-sdk (>=1.0.0)", "lit-nlp (>=0.4.0)", "urllib3 (>=1.21.1,<1.27)", "pyyaml (>=5.3,<6)", "pyarrow (>=6.0.1)", "tensorflow (>=2.3.0,<3.0.0dev)", "pandas (>=1.0.0)", "google-cloud-bigquery-storage", "pyarrow (>=3.0.0,<8.0dev)", "tensorboard-plugin-profile (>=2.4.0,<3.0.0dev)", "werkzeug (>=2.0.0,<2.1.0dev)", "tensorflow (>=2.4.0,<3.0.0dev)", "grpcio-testing", "pytest-xdist", "ipython", "kfp"]
 xai = ["tensorflow (>=2.3.0,<3.0.0dev)"]
 
 [[package]]
@@ -1212,8 +1214,8 @@ google-auth-httplib2 = [
     {file = "google_auth_httplib2-0.1.0-py2.py3-none-any.whl", hash = "sha256:31e49c36c6b5643b57e82617cb3e021e3e1d2df9da63af67252c02fa9c1f4a10"},
 ]
 google-cloud-aiplatform = [
-    {file = "google-cloud-aiplatform-1.14.0.tar.gz", hash = "sha256:030ce313ecf22f2e12c774e26d6c5097ebe646c8b3a1a56bfe5f62bead669220"},
-    {file = "google_cloud_aiplatform-1.14.0-py2.py3-none-any.whl", hash = "sha256:58b1d2bad9a9f10a3cb214ccdfc2c7074893a306577ed120f80b35892b721e69"},
+    {file = "google-cloud-aiplatform-1.15.0.tar.gz", hash = "sha256:23c5c8dbd500f753f0b261b961c5fdd6ed01a7d19fcc14a54273708bb7c7f7ff"},
+    {file = "google_cloud_aiplatform-1.15.0-py2.py3-none-any.whl", hash = "sha256:ed50b84a10ca6b48d933c31368ac26af10c8ff13f22788bf84d42aed13f75169"},
 ]
 google-cloud-bigquery = [
     {file = "google-cloud-bigquery-2.6.1.tar.gz", hash = "sha256:1f99fd0c0c5bde999e056a1be666e5d5bbf392f62c9e730dfcbaf6e8408d44ef"},
