@@ -482,7 +482,7 @@ format_nongpl = ["idna", "jsonpointer (>1.13)", "webcolors", "rfc3986-validator 
 
 [[package]]
 name = "kfp"
-version = "1.8.12"
+version = "1.8.13"
 description = "KubeFlow Pipelines SDK"
 category = "main"
 optional = false
@@ -510,7 +510,7 @@ requests-toolbelt = ">=0.8.0,<1"
 strip-hints = ">=0.1.8,<1"
 tabulate = ">=0.8.6,<1"
 typer = ">=0.3.2,<1.0"
-typing-extensions = {version = ">=3.7.4,<4", markers = "python_version < \"3.9\""}
+typing-extensions = {version = ">=3.7.4,<5", markers = "python_version < \"3.9\""}
 uritemplate = ">=3.0.1,<4"
 
 [package.extras]
@@ -1375,7 +1375,7 @@ jsonschema = [
     {file = "jsonschema-3.2.0.tar.gz", hash = "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"},
 ]
 kfp = [
-    {file = "kfp-1.8.12.tar.gz", hash = "sha256:3d6e1c6faaa99de13cfab3d1997f3b6d92d4458af814d19e88d3eb9cd711f131"},
+    {file = "kfp-1.8.13.tar.gz", hash = "sha256:98e7603cfb9906c8fd15b5b98660de91ad0c6e03991dca50cdfab23056809c97"},
 ]
 kfp-pipeline-spec = [
     {file = "kfp_pipeline_spec-0.1.16-py3-none-any.whl", hash = "sha256:4cefae00ac50145cf862127202a8b8a783ed7504c773d7d7c517bd115283be25"},
