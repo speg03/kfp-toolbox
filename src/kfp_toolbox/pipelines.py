@@ -5,7 +5,6 @@ from typing import Any, Callable, List, Mapping, Optional, Union
 
 import kfp
 import yaml
-from google.auth import credentials as auth_credentials
 from google.cloud import aiplatform
 
 ParameterValue = Union[int, float, str]
@@ -132,7 +131,6 @@ def submit_pipeline_job(
     service_account: Optional[str] = None,
     encryption_spec_key_name: Optional[str] = None,
     labels: Optional[Mapping[str, str]] = None,
-    credentials: Optional[auth_credentials.Credentials] = None,
     project: Optional[str] = None,
     location: Optional[str] = None,
     network: Optional[str] = None,
@@ -169,7 +167,6 @@ def submit_pipeline_job(
             enable_caching=enable_caching,
             encryption_spec_key_name=encryption_spec_key_name,
             labels=new_labels,
-            credentials=credentials,
             project=project,
             location=location,
         )
