@@ -1,9 +1,25 @@
 Welcome to kfp-toolbox's documentation!
 =======================================
 
+*kfp-toolbox* is a Python library that provides useful tools for kfp (Kubeflow Pipelines SDK).
+
+Installation::
+
+   pip install kfp-toolbox
+
+
+User's Guide
+------------
+
 .. toctree::
-   :maxdepth: 4
-   :caption: Contents:
+
+   decorators
+   cli
+
+API Reference
+-------------
+
+.. toctree::
 
    api/kfp_toolbox
 

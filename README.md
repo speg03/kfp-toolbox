@@ -15,51 +15,16 @@ pip install kfp-toolbox
 ```
 
 
-## Usage
+## Documentation
 
-### `spec`
+https://speg03.github.io/kfp-toolbox/
 
-```python
-from kfp_toolbox import spec
-```
 
-The `spec` decorator specifies the computing resources to be used by the component.
+## License
 
-To apply this to a Python function-based component, it must be added outside of the `component` decorator.
+[MIT](https://github.com/speg03/kfp-toolbox/blob/main/LICENSE)
 
-```python
-@spec(cpu="2", memory="16G")
-@dsl.component
-def component_function():
-    ...
-```
 
-For other components, wrap the component as a function.
+## Author
 
-```python
-component = kfp.components.load_component_from_file("path/to/component.yaml")
-component = spec(cpu="2", memory="16G")(component)
-```
-
-If multiple `spec` decorators are stacked, the one placed further out will take precedence. For example, suppose you have created an alias `default_spec`. If you want to overwrite part of it, place a new `spec` decorator outside of the `default_spec` decorator to overwrite it.
-
-```python
-default_spec = spec(cpu="2", memory="16G")
-
-@spec(cpu="1")
-@default_spec
-@dsl.component
-def component_function():
-    ...
-```
-
-See all available options here:
-
-|option|type|description|examples|
-|---|---|---|---|
-|name|str|Display name|`"Component NAME"`|
-|cpu|str|CPU limit|`"1"`, `"500m"`, ... ("m" means 1/1000)|
-|memory|str|Memory limit|`"512K"`, `"16G"`, ...|
-|gpu|str|GPU limit|`"1"`, `"2"`, ...|
-|accelerator|str|Accelerator type|`"NVIDIA_TESLA_K80"`, `"TPU_V3"`, ...|
-|caching|bool|Enable caching|`True` or `False`|
+[speg03](https://github.com/speg03)
