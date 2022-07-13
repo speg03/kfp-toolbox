@@ -37,10 +37,7 @@
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">kfp</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">from</span> <span class="nn">google.auth</span> <span class="kn">import</span> <span class="n">credentials</span> <span class="k">as</span> <span class="n">auth_credentials</span>
-<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">aiplatform</span>
 
 <span class="n">ParameterValue</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 
@@ -166,12 +163,13 @@
     <span class="n">service_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">encryption_spec_key_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">credentials</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">auth_credentials</span><span class="o">.</span><span class="n">Credentials</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">project</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">network</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="k">if</span> <span class="n">endpoint</span><span class="p">:</span>  <span class="c1"># Kubeflow Pipelines</span>
+        <span class="kn">import</span> <span class="nn">kfp</span>
+
         <span class="n">client</span> <span class="o">=</span> <span class="n">kfp</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span>
             <span class="n">host</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
             <span class="n">client_id</span><span class="o">=</span><span class="n">iap_client_id</span><span class="p">,</span>
@@ -190,6 +188,8 @@
             <span class="n">service_account</span><span class="o">=</span><span class="n">service_account</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># Vertex AI Pipelines</span>
+        <span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">aiplatform</span>
+
         <span class="n">new_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="k">if</span> <span class="n">labels</span> <span class="k">else</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">experiment_name</span><span class="p">:</span>
             <span class="n">new_labels</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;experiment&quot;</span><span class="p">:</span> <span class="n">experiment_name</span><span class="p">}</span>
@@ -203,7 +203,6 @@
             <span class="n">enable_caching</span><span class="o">=</span><span class="n">enable_caching</span><span class="p">,</span>
             <span class="n">encryption_spec_key_name</span><span class="o">=</span><span class="n">encryption_spec_key_name</span><span class="p">,</span>
             <span class="n">labels</span><span class="o">=</span><span class="n">new_labels</span><span class="p">,</span>
-            <span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">,</span>
             <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span>
             <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
         <span class="p">)</span>
