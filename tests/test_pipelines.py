@@ -238,7 +238,6 @@ def test_submit_pipeline_job(mock_kfp, mock_aip):
         enable_caching=None,
         encryption_spec_key_name=None,
         labels={"experiment": "test-experiment"},
-        credentials=None,
         project=None,
         location=None,
     )

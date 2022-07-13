@@ -3,10 +3,7 @@ import os
 from dataclasses import dataclass
 from typing import Any, Callable, List, Mapping, Optional, Union
 
-import kfp
 import yaml
-from google.auth import credentials as auth_credentials
-from google.cloud import aiplatform
 
 ParameterValue = Union[int, float, str]
 
@@ -132,12 +129,13 @@ def submit_pipeline_job(
     service_account: Optional[str] = None,
     encryption_spec_key_name: Optional[str] = None,
     labels: Optional[Mapping[str, str]] = None,
-    credentials: Optional[auth_credentials.Credentials] = None,
     project: Optional[str] = None,
     location: Optional[str] = None,
     network: Optional[str] = None,
 ):
     if endpoint:  # Kubeflow Pipelines
+        import kfp
+
         client = kfp.Client(
             host=endpoint,
             client_id=iap_client_id,
@@ -156,6 +154,8 @@ def submit_pipeline_job(
             service_account=service_account,
         )
     else:  # Vertex AI Pipelines
+        from google.cloud import aiplatform
+
         new_labels = dict(labels) if labels else {}
         if experiment_name:
             new_labels = {"experiment": experiment_name}
@@ -169,7 +169,6 @@ def submit_pipeline_job(
             enable_caching=enable_caching,
             encryption_spec_key_name=encryption_spec_key_name,
             labels=new_labels,
-            credentials=credentials,
             project=project,
             location=location,
         )

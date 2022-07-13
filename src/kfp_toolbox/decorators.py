@@ -1,8 +1,6 @@
 import functools
 from typing import Optional
 
-from kfp.v2 import dsl
-
 
 def spec(
     name: Optional[str] = None,
@@ -12,6 +10,8 @@ def spec(
     accelerator: Optional[str] = None,
     caching: Optional[bool] = None,
 ):
+    from kfp.v2 import dsl
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
