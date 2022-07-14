@@ -114,7 +114,7 @@ def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
 
 
 def submit_pipeline_job(
-    pipeline_file: str,
+    pipeline_file: Union[str, os.PathLike],
     endpoint: Optional[str] = None,
     iap_client_id: Optional[str] = None,
     api_namespace: str = "kubeflow",
@@ -133,6 +133,8 @@ def submit_pipeline_job(
     location: Optional[str] = None,
     network: Optional[str] = None,
 ):
+    pipeline_file_str = os.fspath(pipeline_file)
+
     if endpoint:  # Kubeflow Pipelines
         import kfp
 
@@ -144,7 +146,7 @@ def submit_pipeline_job(
             other_client_secret=other_client_secret,
         )
         client.create_run_from_pipeline_package(
-            pipeline_file=pipeline_file,
+            pipeline_file=pipeline_file_str,
             arguments=arguments,  # type: ignore
             run_name=run_name,
             experiment_name=experiment_name,
@@ -162,7 +164,7 @@ def submit_pipeline_job(
 
         job = aiplatform.PipelineJob(
             display_name=None,  # type: ignore  # will be generated
-            template_path=pipeline_file,
+            template_path=pipeline_file_str,
             job_id=run_name,
             pipeline_root=pipeline_root,
             parameter_values=arguments,  # type: ignore
