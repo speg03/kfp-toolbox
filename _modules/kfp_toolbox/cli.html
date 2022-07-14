@@ -43,13 +43,7 @@
 <span class="n">app</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Typer</span><span class="p">(</span><span class="n">context_settings</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;help_option_names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;-h&quot;</span><span class="p">,</span> <span class="s2">&quot;--help&quot;</span><span class="p">]})</span>
 
 
-<div class="viewcode-block" id="callback"><a class="viewcode-back" href="../../api/kfp_toolbox.html#kfp_toolbox.cli.callback">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">invoke_without_command</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">callback</span><span class="p">(</span>
-    <span class="n">ctx</span><span class="p">:</span> <span class="n">typer</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span>
-    <span class="n">version</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span>
-        <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show the version and exit.&quot;</span>
-    <span class="p">),</span>
-<span class="p">):</span>
+<span class="k">def</span> <span class="nf">_version_callback</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
         <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;kfp-toolbox, version </span><span class="si">{</span><span class="n">versions</span><span class="o">.</span><span class="n">kfp_toolbox_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;kfp, version </span><span class="si">{</span><span class="n">versions</span><span class="o">.</span><span class="n">kfp_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -58,9 +52,20 @@
             <span class="sa">f</span><span class="s2">&quot;, version </span><span class="si">{</span><span class="n">versions</span><span class="o">.</span><span class="n">google_cloud_aiplatform_version</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked_subcommand</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get_help</span><span class="p">())</span>
-        <span class="k">raise</span> <span class="n">typer</span><span class="o">.</span><span class="n">Exit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="callback"><a class="viewcode-back" href="../../api/kfp_toolbox.html#kfp_toolbox.cli.callback">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">callback</span><span class="p">(</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;-V&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--version&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show the version and exit.&quot;</span><span class="p">,</span>
+        <span class="n">callback</span><span class="o">=</span><span class="n">_version_callback</span><span class="p">,</span>
+        <span class="n">is_eager</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">):</span>
+    <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="submit"><a class="viewcode-back" href="../../api/kfp_toolbox.html#kfp_toolbox.cli.submit">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">add_help_option</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -92,7 +97,7 @@
     <span class="n">pipeline_root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The root path of the pipeline outputs.&quot;</span>
     <span class="p">),</span>
-    <span class="n">enable_caching</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;--disable-caching&quot;</span><span class="p">),</span>
+    <span class="n">caching</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">True</span><span class="p">),</span>
     <span class="n">service_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
     <span class="n">encryption_spec_key_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
     <span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;-l&quot;</span><span class="p">,</span> <span class="s2">&quot;--label&quot;</span><span class="p">),</span>
@@ -154,7 +159,7 @@
         <span class="n">experiment_name</span><span class="o">=</span><span class="n">experiment_name</span><span class="p">,</span>
         <span class="n">namespace</span><span class="o">=</span><span class="n">namespace</span><span class="p">,</span>
         <span class="n">pipeline_root</span><span class="o">=</span><span class="n">pipeline_root</span><span class="p">,</span>
-        <span class="n">enable_caching</span><span class="o">=</span><span class="n">enable_caching</span><span class="p">,</span>
+        <span class="n">enable_caching</span><span class="o">=</span><span class="n">caching</span><span class="p">,</span>
         <span class="n">service_account</span><span class="o">=</span><span class="n">service_account</span><span class="p">,</span>
         <span class="n">encryption_spec_key_name</span><span class="o">=</span><span class="n">encryption_spec_key_name</span><span class="p">,</span>
         <span class="n">labels</span><span class="o">=</span><span class="n">labels_dict</span><span class="p">,</span>
