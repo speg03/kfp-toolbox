@@ -86,7 +86,7 @@ def _create_v1_pipeline(pipeline_spec: Mapping[str, Any]) -> Pipeline:
     return Pipeline(name=pipeline_name, parameters=parameters)
 
 
-def load_pipeline_from_file(filepath: Union[str, os.PathLike[str]]) -> Pipeline:
+def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
     filepath_str = os.fspath(filepath)
     with open(filepath_str, "r") as f:
         pipeline_spec = yaml.safe_load(f)
@@ -114,7 +114,7 @@ def load_pipeline_from_file(filepath: Union[str, os.PathLike[str]]) -> Pipeline:
 
 
 def submit_pipeline_job(
-    pipeline_file: Union[str, os.PathLike[str]],
+    pipeline_file: Union[str, os.PathLike],
     endpoint: Optional[str] = None,
     iap_client_id: Optional[str] = None,
     api_namespace: str = "kubeflow",
