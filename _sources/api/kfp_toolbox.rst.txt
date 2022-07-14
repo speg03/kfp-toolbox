@@ -1,16 +1,16 @@
 kfp\_toolbox package
 ====================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   kfp_toolbox.cli
-
 Submodules
 ----------
+
+kfp\_toolbox.cli module
+-----------------------
+
+.. automodule:: kfp_toolbox.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 kfp\_toolbox.decorators module
 ------------------------------
