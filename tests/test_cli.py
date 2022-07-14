@@ -61,7 +61,7 @@ def test_submit(mock_submit_pipeline_job, tmp_path):
 
 
 @patch("kfp_toolbox.pipelines.submit_pipeline_job")
-def test_submit_with_disable_caching(mock_submit_pipeline_job, tmp_path):
+def test_submit_with_no_caching(mock_submit_pipeline_job, tmp_path):
     @dsl.component
     def echo() -> str:
         return "hello, world"
@@ -74,7 +74,7 @@ def test_submit_with_disable_caching(mock_submit_pipeline_job, tmp_path):
     compiler.Compiler().compile(pipeline_func=echo_pipeline, package_path=pipeline_path)
 
     result = runner.invoke(
-        app, ["submit", f"--pipeline-file={pipeline_path}", "--disable-caching"]
+        app, ["submit", f"--pipeline-file={pipeline_path}", "--no-caching"]
     )
 
     assert result.exit_code == 0
@@ -139,6 +139,13 @@ def test_submit_help():
 
 def test_main():
     result = runner.invoke(app)
+
+    assert result.exit_code != 0
+    assert result.output.startswith("Usage: ")
+
+
+def test_main_help():
+    result = runner.invoke(app, ["--help"])
 
     assert result.exit_code == 0
     assert result.output.startswith("Usage: ")
