@@ -63,7 +63,7 @@ def submit(
     pipeline_root: Optional[str] = typer.Option(
         None, help="The root path of the pipeline outputs."
     ),
-    enable_caching: bool = typer.Option(True, "--disable-caching"),
+    caching: bool = typer.Option(True),
     service_account: Optional[str] = typer.Option(None),
     encryption_spec_key_name: Optional[str] = typer.Option(None),
     labels: Optional[List[str]] = typer.Option(None, "-l", "--label"),
@@ -125,7 +125,7 @@ def submit(
         experiment_name=experiment_name,
         namespace=namespace,
         pipeline_root=pipeline_root,
-        enable_caching=enable_caching,
+        enable_caching=caching,
         service_account=service_account,
         encryption_spec_key_name=encryption_spec_key_name,
         labels=labels_dict,
