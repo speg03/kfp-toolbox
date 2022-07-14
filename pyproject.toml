@@ -38,7 +38,7 @@ sphinx = "^5.0"
 sphinx-autobuild = "^2021"
 
 [tool.poetry.scripts]
-kfp-toolbox = "kfp_toolbox.cli.main:main"
+kfp-toolbox = "kfp_toolbox.cli:main"
 
 [tool.isort]
 profile = "black"

@@ -4,7 +4,7 @@ from unittest.mock import patch
 from click.testing import CliRunner
 from kfp.v2 import compiler, dsl
 
-from kfp_toolbox.cli import submit
+from kfp_toolbox.cli import main, submit
 
 
 @patch("kfp_toolbox.pipelines.submit_pipeline_job")
@@ -22,7 +22,7 @@ def test_submit(mock_submit_pipeline_job, tmp_path):
 
     runner = CliRunner()
     result = runner.invoke(
-        submit.submit,
+        submit,
         [
             f"--pipeline-file={pipeline_path}",
             "--endpoint=http://localhost:8080",
@@ -72,7 +72,7 @@ def test_submit_with_disable_caching(mock_submit_pipeline_job, tmp_path):
 
     runner = CliRunner()
     result = runner.invoke(
-        submit.submit, [f"--pipeline-file={pipeline_path}", "--disable-caching"]
+        submit, [f"--pipeline-file={pipeline_path}", "--disable-caching"]
     )
 
     assert result.exit_code == 0
@@ -100,7 +100,7 @@ def test_submit_with_disable_caching(mock_submit_pipeline_job, tmp_path):
 
 def test_submit_with_no_pipelie_files():
     runner = CliRunner()
-    result = runner.invoke(submit.submit)
+    result = runner.invoke(submit)
 
     assert result.exit_code != 0
     assert "Error: The --pipeline-file option must be specified." in result.output
@@ -120,7 +120,7 @@ def test_submit_with_invalid_label(tmp_path):
 
     runner = CliRunner()
     result = runner.invoke(
-        submit.submit, [f"--pipeline-file={pipeline_path}", "--label=invalid_label"]
+        submit, [f"--pipeline-file={pipeline_path}", "--label=invalid_label"]
     )
 
     assert result.exit_code != 0
@@ -132,7 +132,23 @@ def test_submit_with_invalid_label(tmp_path):
 
 def test_submit_help():
     runner = CliRunner()
-    result = runner.invoke(submit.submit, ["--help"])
+    result = runner.invoke(submit, ["--help"])
 
     assert result.exit_code == 0
     assert result.output.startswith("Usage: ")
+
+
+def test_main():
+    runner = CliRunner()
+    result = runner.invoke(main)
+
+    assert result.exit_code == 0
+    assert result.output.startswith("Usage: ")
+
+
+def test_main_version():
+    runner = CliRunner()
+    result = runner.invoke(main, ["--version"])
+
+    assert result.exit_code == 0
+    assert "version" in result.output

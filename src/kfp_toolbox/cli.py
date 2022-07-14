@@ -3,7 +3,7 @@ from typing import Optional, Sequence
 
 import click
 
-from kfp_toolbox import pipelines
+from . import pipelines, versions
 
 
 @click.command(add_help_option=False)
@@ -110,3 +110,19 @@ def submit(
         location=location,
         network=network,
     )
+
+
+@click.group(commands=[submit])
+@click.help_option("-h", "--help")
+@click.version_option(
+    versions.kfp_toolbox_version,
+    "-V",
+    "--version",
+    message=(
+        "%(prog)s, version %(version)s\n"
+        f"kfp, version {versions.kfp_version}\n"
+        f"google-cloud-aiplatform, version {versions.google_cloud_aiplatform_version}"
+    ),
+)
+def main():
+    pass  # pragma: no cover
