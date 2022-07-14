@@ -9,13 +9,7 @@ from . import pipelines, versions
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
 
-@app.callback(invoke_without_command=True)
-def callback(
-    ctx: typer.Context,
-    version: bool = typer.Option(
-        False, "-V", "--version", help="Show the version and exit."
-    ),
-):
+def _version_callback(version: bool):
     if version:
         typer.echo(f"kfp-toolbox, version {versions.kfp_toolbox_version}")
         typer.echo(f"kfp, version {versions.kfp_version}")
@@ -24,9 +18,20 @@ def callback(
             f", version {versions.google_cloud_aiplatform_version}"
         )
         raise typer.Exit()
-    elif ctx.invoked_subcommand is None:
-        typer.echo(ctx.get_help())
-        raise typer.Exit()
+
+
+@app.callback()
+def callback(
+    version: bool = typer.Option(
+        False,
+        "-V",
+        "--version",
+        help="Show the version and exit.",
+        callback=_version_callback,
+        is_eager=True,
+    ),
+):
+    pass
 
 
 @app.command(add_help_option=False)

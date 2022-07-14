@@ -140,6 +140,13 @@ def test_submit_help():
 def test_main():
     result = runner.invoke(app)
 
+    assert result.exit_code != 0
+    assert result.output.startswith("Usage: ")
+
+
+def test_main_help():
+    result = runner.invoke(app, ["--help"])
+
     assert result.exit_code == 0
     assert result.output.startswith("Usage: ")
 
