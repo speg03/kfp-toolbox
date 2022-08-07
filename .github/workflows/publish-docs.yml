@@ -4,8 +4,12 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
-  build-and-publish:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,18 +22,29 @@ jobs:
           python-version: "3.x"
           cache: poetry
 
-      - name: Install library
+      - name: Install dependencies
         run: |
           poetry env use ${{ steps.setup-python.outputs.python-version }}
-          poetry install --no-interaction
+          poetry install --no-interaction -E docs
 
       - name: Build
         run: poetry run make html
 
-      - name: Publish
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
-          user_name: github-actions[bot]
-          user_email: github-actions[bot]@users.noreply.github.com
+          path: ./docs/_build/html
+
+  publish:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
