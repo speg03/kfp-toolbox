@@ -12,7 +12,8 @@ build: lint test
 	poetry build
 
 html:
-	sphinx-apidoc --no-toc --force --output-dir=./docs/api ./src
+	env SPHINX_APIDOC_OPTIONS="members" \
+		sphinx-apidoc --no-toc --separate --force --output-dir=./docs/api ./src
 	sphinx-build -W -b html ./docs ./docs/_build/html
 livehtml: html
 	sphinx-autobuild -b html ./docs ./docs/_build/html
