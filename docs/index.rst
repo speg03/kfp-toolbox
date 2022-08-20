@@ -8,18 +8,14 @@ Installation::
    pip install kfp-toolbox
 
 
-User's Guide
-------------
-
 .. toctree::
+   :caption: User's Guide
 
    decorators
    cli
 
-API Reference
--------------
-
 .. toctree::
+   :caption: API Reference
 
    api/kfp_toolbox
 

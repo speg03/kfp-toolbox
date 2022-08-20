@@ -8,7 +8,7 @@ Decorators
 
     from kfp_toolbox import spec
 
-The ``spec`` decorator specifies the computing resources to be used by the component.
+``spec`` decorator specifies computing resources to be used by the component.
 
 To apply this to a Python function-based component, it must be added outside of the ``component`` decorator.
 

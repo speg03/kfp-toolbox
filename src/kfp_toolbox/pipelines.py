@@ -1,7 +1,7 @@
 import json
 import os
 from dataclasses import dataclass
-from typing import Any, Callable, List, Mapping, Optional, Union
+from typing import Any, Callable, Mapping, Optional, Sequence, Union
 
 import yaml
 
@@ -10,6 +10,17 @@ ParameterValue = Union[int, float, str]
 
 @dataclass
 class Parameter:
+    """Pipeline parameter.
+
+    A class that represents a single pipeline parameter.
+
+    Attributes:
+        name: A name of the parameter.
+        type: A type function of the parameter.
+        default: A default value of the parameter.
+
+    """
+
     name: str
     type: Callable
     default: Optional[ParameterValue] = None
@@ -17,8 +28,18 @@ class Parameter:
 
 @dataclass
 class Pipeline:
+    """Pipeline.
+
+    A class that summarizes pipeline information.
+
+    Attributes:
+        name: A name of the pipeline.
+        parameters: A sequence of the pipeline parameters.
+
+    """
+
     name: str
-    parameters: List[Parameter]
+    parameters: Sequence[Parameter]
 
 
 def _type_function_from_name(type_name: str) -> Callable:
@@ -87,6 +108,23 @@ def _create_v1_pipeline(pipeline_spec: Mapping[str, Any]) -> Pipeline:
 
 
 def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
+    """Load a pipeline object from the pipeline file.
+
+    Load a :class:`Pipeline` object from a pre-compiled file that represents
+    the pipeline.
+
+    Args:
+        filepath (Union[str, os.PathLike]): The path of the pre-compiled file that
+            represents the pipeline.
+
+    Raises:
+        ValueError: If the :attr:`filepath` file has an invalid schema.
+
+    Returns:
+        Pipeline: An object that represents the pipeline.
+
+    """
+
     filepath_str = os.fspath(filepath)
     with open(filepath_str, "r") as f:
         pipeline_spec = yaml.safe_load(f)
@@ -133,6 +171,55 @@ def submit_pipeline_job(
     location: Optional[str] = None,
     network: Optional[str] = None,
 ):
+    """Submit a pipeline job.
+
+    Submit a pipeline job to the appropriate environment. If an :attr:`endpoint` is
+    specified, it is considered an instance of Kubeflow Pipelines. Otherwise, attempt
+    to submit to Vertex AI Pipelines.
+
+    Args:
+        pipeline_file (Union[str, os.PathLike]): Path of the pipeline package file.
+        endpoint (Optional[str], optional): Endpoint of the KFP API service to connect.
+            Used only for Kubeflow Pipelines. Defaults to None.
+        iap_client_id (Optional[str], optional): The client ID used by Identity-Aware
+            Proxy. Used only for Kubeflow Pipelines. Defaults to None.
+        api_namespace (str, optional): Kubernetes namespace to connect to the KFP API.
+            Used only for Kubeflow Pipelines. Defaults to "kubeflow".
+        other_client_id (Optional[str], optional): The client ID used to obtain
+            the auth codes and refresh tokens. Used only for Kubeflow Pipelines.
+            Defaults to None.
+        other_client_secret (Optional[str], optional): The client secret used to obtain
+            the auth codes and refresh tokens. Used only for Kubeflow Pipelines.
+            Defaults to None.
+        arguments (Optional[Mapping[str, Any]], optional): Arguments to the pipeline
+            function provided as a dict. Defaults to None.
+        run_name (Optional[str], optional): Name of the run to be shown in the UI.
+            Defaults to None.
+        experiment_name (Optional[str], optional): Name of the experiment to add the
+            run to. Defaults to None.
+        namespace (Optional[str], optional): Kubernetes namespace where the pipeline
+            runs are created. Used only for Kubeflow Pipelines. Defaults to None.
+        pipeline_root (Optional[str], optional): The root path of the pipeline outputs.
+            Defaults to None.
+        enable_caching (Optional[bool], optional): Whether or not to enable caching for
+            the run. Defaults to None.
+        service_account (Optional[str], optional): Specifies which Kubernetes service
+            account this run uses. Defaults to None.
+        encryption_spec_key_name (Optional[str], optional): The Cloud KMS resource
+            identifier of the customer managed encryption key used to protect the job.
+            Used only for Vertex AI Pipelines. Defaults to None.
+        labels (Optional[Mapping[str, str]], optional): The user defined metadata to
+            organize PipelineJob. Used only for Vertex AI Pipelines. Defaults to None.
+        project (Optional[str], optional): The project that you want to run this
+            PipelineJob in. Used only for Vertex AI Pipelines. Defaults to None.
+        location (Optional[str], optional): Location to create PipelineJob. Used only
+            for Vertex AI Pipelines. Defaults to None.
+        network (Optional[str], optional): The full name of the Compute Engine network
+            to which the job should be peered. Used only for Vertex AI Pipelines.
+            Defaults to None.
+
+    """
+
     pipeline_file_str = os.fspath(pipeline_file)
 
     if endpoint:  # Kubeflow Pipelines
