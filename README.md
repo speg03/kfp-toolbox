@@ -6,6 +6,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/kfp-toolbox)](https://pypi.org/project/kfp-toolbox/)
 [![Python Tests](https://github.com/speg03/kfp-toolbox/actions/workflows/python-tests.yml/badge.svg)](https://github.com/speg03/kfp-toolbox/actions/workflows/python-tests.yml)
 [![codecov](https://codecov.io/gh/speg03/kfp-toolbox/branch/main/graph/badge.svg?token=wsW6rjrcBz)](https://codecov.io/gh/speg03/kfp-toolbox)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/speg03/kfp-toolbox/main.svg)](https://results.pre-commit.ci/latest/github/speg03/kfp-toolbox/main)
 
 
 ## Installation
