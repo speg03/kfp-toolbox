@@ -10,6 +10,31 @@ def spec(
     accelerator: Optional[str] = None,
     caching: Optional[bool] = None,
 ):
+    """Specify computing resources to be used by the component.
+
+    This function is used as decorator. The computing resources that can be specified
+    are CPU, memory, GPU, and accelerator type. In addition, the display name of the
+    component and the use of cache can be specified.
+
+    Args:
+        name (Optional[str], optional): Display name for the component. Defaults to
+            None.
+        cpu (Optional[str], optional): CPU limit (maximum) for the component. Defaults
+            to None.
+        memory (Optional[str], optional): Memory limit (maximum) for the component.
+            Defaults to None.
+        gpu (Optional[str], optional): GPU limit (maximum) for the component. Defaults
+            to None.
+        accelerator (Optional[str], optional): Accelerator type requirement for the
+            component. Defaults to None.
+        caching (Optional[bool], optional): Caching options for this task. Defaults to
+            None.
+
+    Returns:
+        Callable: A decorator function with specified computing resources.
+
+    """
+
     from kfp.v2 import dsl
 
     def decorator(func):
