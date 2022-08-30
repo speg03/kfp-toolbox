@@ -44,7 +44,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install "$(ls ./dist/kfp_toolbox-*-py3-none-any.whl)[test]"
+          python3 -m pip install "$(ls ./dist/*-py3-none-any.whl)[test]"
 
       - name: Test
         run: make test
