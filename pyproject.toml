@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kfp-toolbox"
-version = "0.2.0"
+version = "0.3.0"
 description = "The toolbox for kfp (Kubeflow Pipelines SDK)"
 authors = [
     { name = "Takahiro Yano", email = "speg03@gmail.com" },
