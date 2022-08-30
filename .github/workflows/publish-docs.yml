@@ -13,22 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install poetry
-        run: pipx install poetry
-      - name: Set up Python
-        id: setup-python
-        uses: actions/setup-python@v4
+      - uses: actions/cache@v3
         with:
-          python-version: "3.x"
-          cache: poetry
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-docs-${{ hashFiles("**/pyproject.toml") }}
+          restore-keys: ${{ runner.os }}-pip-docs-
 
       - name: Install dependencies
-        run: |
-          poetry env use ${{ steps.setup-python.outputs.python-version }}
-          poetry install --no-interaction -E docs
+        run: python3 -m pip install ".[docs]"
 
       - name: Build
-        run: poetry run make html
+        run: make html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

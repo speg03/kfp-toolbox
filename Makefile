@@ -8,8 +8,9 @@ lint:
 	pre-commit run --all-files
 test:
 	pytest -v ./tests
-build: lint test
-	poetry build
+build:
+	python3 -m pip install build
+	python3 -m build
 
 html:
 	env SPHINX_APIDOC_OPTIONS="members" \
