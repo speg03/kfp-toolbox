@@ -13,6 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-docs-${{ hashFiles("**/pyproject.toml") }}
+          restore-keys: ${{ runner.os }}-pip-docs-
 
       - name: Install dependencies
         run: python3 -m pip install ".[docs]"
