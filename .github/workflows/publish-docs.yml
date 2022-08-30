@@ -16,7 +16,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-docs-${{ hashFiles("**/pyproject.toml") }}
+          key: ${{ runner.os }}-pip-docs-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: ${{ runner.os }}-pip-docs-
 
       - name: Install dependencies
