@@ -245,10 +245,6 @@ def submit_pipeline_job(
     else:  # Vertex AI Pipelines
         from google.cloud import aiplatform
 
-        new_labels = dict(labels) if labels else {}
-        if experiment_name:
-            new_labels = {"experiment": experiment_name}
-
         job = aiplatform.PipelineJob(
             display_name=None,  # type: ignore  # will be generated
             template_path=pipeline_file_str,
@@ -257,8 +253,10 @@ def submit_pipeline_job(
             parameter_values=arguments,  # type: ignore
             enable_caching=enable_caching,
             encryption_spec_key_name=encryption_spec_key_name,
-            labels=new_labels,
+            labels=labels,  # type: ignore
             project=project,
             location=location,
         )
-        job.submit(service_account=service_account, network=network)
+        job.submit(
+            service_account=service_account, network=network, experiment=experiment_name
+        )

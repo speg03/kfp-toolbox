@@ -237,12 +237,12 @@ def test_submit_pipeline_job(mock_kfp, mock_aip):
         parameter_values={"param": 1},
         enable_caching=None,
         encryption_spec_key_name=None,
-        labels={"experiment": "test-experiment"},
+        labels=None,
         project=None,
         location=None,
     )
     mock_aip.return_value.submit.assert_called_once_with(
-        service_account=None, network=None
+        service_account=None, network=None, experiment="test-experiment"
     )
 
 
