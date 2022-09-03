@@ -8,6 +8,7 @@ lint:
 	pre-commit run --all-files
 test:
 	pytest -v ./tests
+	./tests/test_examples.sh
 build:
 	python3 -m pip install build
 	python3 -m build
