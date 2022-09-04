@@ -10,10 +10,12 @@ def timestamp(
     prefix: str = "",
     postfix: str = "",
     separator: str = "-",
+    tz_offset: int = 0,
 ) -> str:
-    from datetime import datetime
+    import datetime
 
-    time_string = datetime.now().strftime(format)
+    tz = datetime.timezone(offset=datetime.timedelta(hours=tz_offset))
+    time_string = datetime.datetime.now(tz).strftime(format)
     if prefix:
         time_string = separator.join([prefix, time_string])
     if postfix:

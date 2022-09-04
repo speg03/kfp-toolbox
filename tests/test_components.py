@@ -11,8 +11,18 @@ def test_timestamp():
 
 @freeze_time("2022-09-01 00:00:00")
 def test_timestamp_format():
-    time_string = components.timestamp.python_func("%Y%m%d")  # type: ignore
-    assert time_string == "20220901"
+    time_string = components.timestamp.python_func(  # type: ignore
+        format="%Y-%m-%d %H:%M:%S %Z"
+    )
+    assert time_string == "2022-09-01 00:00:00 UTC"
+
+
+@freeze_time("2022-09-01 00:00:00")
+def test_timestamp_with_offset():
+    time_string = components.timestamp.python_func(  # type: ignore
+        format="%Y-%m-%d %H:%M:%S %Z", tz_offset=9
+    )
+    assert time_string == "2022-09-01 09:00:00 UTC+09:00"
 
 
 @freeze_time("2022-09-01 00:00:00")
@@ -32,5 +42,5 @@ def test_timestamp_with_separator():
 
 
 def test_timestamp_specific():
-    time_string = components.timestamp.python_func("2022-01-01")  # type: ignore
+    time_string = components.timestamp.python_func(format="2022-01-01")  # type: ignore
     assert time_string == "2022-01-01"
