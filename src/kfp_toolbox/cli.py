@@ -63,7 +63,7 @@ def submit(
     pipeline_root: Optional[str] = typer.Option(
         None, help="The root path of the pipeline outputs."
     ),
-    caching: bool = typer.Option(True),
+    caching: Optional[bool] = typer.Option(None),
     service_account: Optional[str] = typer.Option(None),
     encryption_spec_key_name: Optional[str] = typer.Option(None),
     labels: Optional[List[str]] = typer.Option(None, "-l", "--label"),
