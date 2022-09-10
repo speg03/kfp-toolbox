@@ -1,3 +1,5 @@
+from typing import Optional
+
 from kfp.v2 import dsl
 
 from .decorators import spec
@@ -7,8 +9,8 @@ from .decorators import spec
 @dsl.component
 def timestamp(
     format: str = "%Y%m%d%H%M%S",
-    prefix: str = "",
-    postfix: str = "",
+    prefix: Optional[str] = None,
+    postfix: Optional[str] = None,
     separator: str = "-",
     tz_offset: int = 0,
 ) -> str:
