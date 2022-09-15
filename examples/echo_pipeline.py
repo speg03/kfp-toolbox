@@ -4,7 +4,7 @@ from kfp_toolbox import spec
 
 
 @spec(name="echo-hello", cpu="1", memory="4G")
-@dsl.component
+@dsl.component()
 def echo(message: str) -> str:
     return message
 
