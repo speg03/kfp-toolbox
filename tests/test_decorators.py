@@ -17,7 +17,7 @@ def test_spec_v1_as_decorator(tmp_path):
         accelerator="NVIDIA_TESLA_T4",
         caching=True,
     )
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -56,7 +56,7 @@ def test_spec_as_decorator(tmp_path):
         accelerator="NVIDIA_TESLA_T4",
         caching=True,
     )
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -84,7 +84,7 @@ def test_spec_as_decorator(tmp_path):
 
 
 def test_spec_v1_as_function(tmp_path):
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -122,7 +122,7 @@ def test_spec_v1_as_function(tmp_path):
 
 
 def test_spec_as_function(tmp_path):
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -158,7 +158,7 @@ def test_spec_as_function(tmp_path):
 
 def test_spec_v1_with_disable_caching(tmp_path):
     @spec(caching=False)
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -182,7 +182,7 @@ def test_spec_v1_with_disable_caching(tmp_path):
 
 def test_spec_with_disable_caching(tmp_path):
     @spec(caching=False)
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -206,7 +206,7 @@ def test_spec_v1_with_multiple_decorators(tmp_path):
 
     @spec(cpu="1")
     @default_spec
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -234,7 +234,7 @@ def test_spec_with_multiple_decorators(tmp_path):
 
     @spec(cpu="1")
     @default_spec
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 

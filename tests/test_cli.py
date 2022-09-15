@@ -12,7 +12,7 @@ runner = CliRunner()
 
 @patch("kfp_toolbox.pipelines.submit_pipeline_job")
 def test_submit(mock_submit_pipeline_job, tmp_path):
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -62,7 +62,7 @@ def test_submit(mock_submit_pipeline_job, tmp_path):
 
 @patch("kfp_toolbox.pipelines.submit_pipeline_job")
 def test_submit_with_caching(mock_submit_pipeline_job, tmp_path):
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -102,7 +102,7 @@ def test_submit_with_caching(mock_submit_pipeline_job, tmp_path):
 
 @patch("kfp_toolbox.pipelines.submit_pipeline_job")
 def test_submit_with_no_caching(mock_submit_pipeline_job, tmp_path):
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 
@@ -148,7 +148,7 @@ def test_submit_with_no_pipelie_files():
 
 
 def test_submit_with_invalid_label(tmp_path):
-    @dsl.component
+    @dsl.component()
     def echo() -> str:
         return "hello, world"
 

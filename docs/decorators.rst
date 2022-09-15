@@ -17,7 +17,7 @@ To apply this to a Python function-based component, it must be added outside of 
     from kfp.v2 import dsl
 
     @spec(cpu="2", memory="16G")
-    @dsl.component
+    @dsl.component()
     def component_function():
         ...
 
@@ -40,7 +40,7 @@ If multiple ``spec`` decorators are stacked, the one placed further out will tak
 
     @spec(cpu="1")
     @default_spec
-    @dsl.component
+    @dsl.component()
     def component_function():
         ...
 

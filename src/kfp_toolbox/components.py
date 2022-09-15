@@ -6,7 +6,7 @@ from .decorators import spec
 
 
 @spec(caching=False)
-@dsl.component
+@dsl.component()
 def timestamp(
     format: str = "%Y%m%d%H%M%S",
     prefix: Optional[str] = None,
@@ -14,18 +14,7 @@ def timestamp(
     separator: str = "-",
     tz_offset: int = 0,
 ) -> str:
-    import datetime
-
-    tz = datetime.timezone(offset=datetime.timedelta(hours=tz_offset))
-    time_string = datetime.datetime.now(tz).strftime(format)
-    if prefix:
-        time_string = separator.join([prefix, time_string])
-    if postfix:
-        time_string = separator.join([time_string, postfix])
-    return time_string
-
-
-timestamp.__doc__ = """Generate a time string in a specified format.
+    """Generate a time string in a specified format.
 
     It adds a :attr:`prefix` or :attr:`postfix` to the time string generated from the
     format, along with a :attr:`separator`. :attr:`tz_offset` can be specified to
@@ -50,3 +39,13 @@ timestamp.__doc__ = """Generate a time string in a specified format.
         postfix string separated by a separator is appended.
 
     """
+
+    import datetime
+
+    tz = datetime.timezone(offset=datetime.timedelta(hours=tz_offset))
+    time_string = datetime.datetime.now(tz).strftime(format)
+    if prefix:
+        time_string = separator.join([prefix, time_string])
+    if postfix:
+        time_string = separator.join([time_string, postfix])
+    return time_string
