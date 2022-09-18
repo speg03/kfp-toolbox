@@ -4,19 +4,14 @@ from typing import List, Optional
 
 import typer
 
-from . import pipelines, versions
+from . import __version__, pipelines
 
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
 
 def _version_callback(version: bool):
     if version:
-        typer.echo(f"kfp-toolbox, version {versions.kfp_toolbox_version}")
-        typer.echo(f"kfp, version {versions.kfp_version}")
-        typer.echo(
-            "google-cloud-aiplatform"
-            f", version {versions.google_cloud_aiplatform_version}"
-        )
+        typer.echo(__version__)
         raise typer.Exit()
 
 

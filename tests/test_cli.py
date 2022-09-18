@@ -5,6 +5,7 @@ from unittest.mock import patch
 from kfp.v2 import compiler, dsl
 from typer.testing import CliRunner
 
+from kfp_toolbox import __version__
 from kfp_toolbox.cli import app
 
 runner = CliRunner()
@@ -195,4 +196,4 @@ def test_main_version():
     result = runner.invoke(app, ["--version"])
 
     assert result.exit_code == 0
-    assert "version" in result.output
+    assert result.output == f"{__version__}\n"

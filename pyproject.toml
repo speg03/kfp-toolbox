@@ -1,10 +1,9 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "kfp-toolbox"
-version = "0.4.2"
 description = "The toolbox for kfp (Kubeflow Pipelines SDK)"
 authors = [
     { name = "Takahiro Yano", email = "speg03@gmail.com" },
@@ -26,6 +25,8 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+
+dynamic = ["version"]
 
 requires-python = ">=3.7"
 dependencies = [
@@ -54,6 +55,12 @@ kfp-toolbox = "kfp_toolbox.cli:app"
 [project.urls]
 Homepage = "https://speg03.github.io/kfp-toolbox/"
 Repository = "https://github.com/speg03/kfp-toolbox"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/kfp_toolbox/versions.py"
 
 [tool.isort]
 profile = "black"

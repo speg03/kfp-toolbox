@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Auto-generated
+docs/api/*.rst
+src/kfp_toolbox/versions.py
