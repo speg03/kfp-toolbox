@@ -1,0 +1,4 @@
+kfp~=1.8
+google-cloud-aiplatform~=1.15
+typer>=0.4, <1.0
+pyyaml>=5.3
