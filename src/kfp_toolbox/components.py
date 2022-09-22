@@ -2,10 +2,11 @@ from typing import Optional
 
 from kfp.v2 import dsl
 
-from .decorators import spec
+from .decorators import override_docstring, spec
 
 
 @spec(caching=False)
+@override_docstring()
 @dsl.component()
 def timestamp(
     format: str = "%Y%m%d%H%M%S",

@@ -5,7 +5,7 @@ from kfp import compiler as compiler_v1
 from kfp import dsl as dsl_v1
 from kfp.v2 import compiler, dsl
 
-from kfp_toolbox import spec
+from kfp_toolbox import override_docstring, spec
 
 
 def test_spec_v1_as_decorator(tmp_path):
@@ -254,3 +254,53 @@ def test_spec_with_multiple_decorators(tmp_path):
 
     assert container["resources"]["cpuLimit"] == 1.0
     assert container["resources"]["memoryLimit"] == 16.0
+
+
+def test_override_docstring_no_decorators():
+    @dsl.component()
+    def echo() -> str:
+        """Say hello
+
+        This component just says hello.
+
+        Returns:
+            str: hello
+        """
+        return "hello, world"
+
+    assert echo.__doc__ == "Echo\nSay hello"
+
+
+def test_override_docstring():
+    @override_docstring()
+    @dsl.component()
+    def echo() -> str:
+        """Say hello
+
+        This component just says hello.
+
+        Returns:
+            str: hello
+        """
+        return "hello, world"
+
+    assert echo.__doc__ == (
+        "Say hello\n\n        This component just says hello.\n\n"
+        "        Returns:\n            str: hello\n        "
+    )
+
+
+def test_override_docstring_specific_docs():
+    @override_docstring("Just say hello component")
+    @dsl.component()
+    def echo() -> str:
+        """Say hello
+
+        This component just says hello.
+
+        Returns:
+            str: hello
+        """
+        return "hello, world"
+
+    assert echo.__doc__ == "Just say hello component"
