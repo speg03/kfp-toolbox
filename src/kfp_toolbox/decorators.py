@@ -2,6 +2,28 @@ import functools
 from typing import Optional
 
 
+def override_docstring(docs: Optional[str] = None):
+    """Override the docstring of the component.
+
+    Args:
+        docs (Optional[str], optional): The docstring to be overwritten. If None, the
+            docstring of the original function is adopted. Defaults to None.
+
+    Returns:
+        Callable: A decorator function with the specified docstring.
+
+    """
+
+    def _decorator(func):
+        if docs is not None:
+            func.__doc__ = docs
+        elif hasattr(func, "python_func") and func.python_func.__doc__:
+            func.__doc__ = func.python_func.__doc__
+        return func
+
+    return _decorator
+
+
 def spec(
     name: Optional[str] = None,
     cpu: Optional[str] = None,
