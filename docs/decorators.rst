@@ -1,14 +1,14 @@
 Decorators
 ==========
 
-``spec``
---------
+``container_spec``
+------------------
 
 .. code-block:: python
 
-    from kfp_toolbox import spec
+    from kfp_toolbox import container_spec
 
-``spec`` decorator specifies computing resources to be used by the component.
+``container_spec`` decorator specifies computing resources to be used by the component.
 
 To apply this to a Python function-based component, it must be added outside of the ``component`` decorator.
 
@@ -16,7 +16,7 @@ To apply this to a Python function-based component, it must be added outside of 
 
     from kfp.v2 import dsl
 
-    @spec(cpu="2", memory="16G")
+    @container_spec(cpu="2", memory="16G")
     @dsl.component()
     def component_function():
         ...
@@ -28,17 +28,17 @@ For other components, wrap the component as a function.
     from kfp.components import load_component_from_file
 
     component = load_component_from_file("path/to/component.yaml")
-    component = spec(cpu="2", memory="16G")(component)
+    component = container_spec(cpu="2", memory="16G")(component)
 
-If multiple ``spec`` decorators are stacked, the one placed further out will take precedence. For example, suppose you have created an alias ``default_spec``. If you want to overwrite part of it, place a new ``spec`` decorator outside of the ``default_spec`` decorator to overwrite it.
+If multiple ``container_spec`` decorators are stacked, the one placed further out will take precedence. For example, suppose you have created an alias ``default_spec``. If you want to overwrite part of it, place a new ``container_spec`` decorator outside of the ``default_spec`` decorator to overwrite it.
 
 .. code-block:: python
 
     from kfp.v2 import dsl
 
-    default_spec = spec(cpu="2", memory="16G")
+    default_spec = container_spec(cpu="2", memory="16G")
 
-    @spec(cpu="1")
+    @container_spec(cpu="1")
     @default_spec
     @dsl.component()
     def component_function():
@@ -46,17 +46,13 @@ If multiple ``spec`` decorators are stacked, the one placed further out will tak
 
 See all available options here:
 
-.. list-table:: Options for ``spec``
+.. list-table:: Options for ``container_spec``
     :header-rows: 1
 
     * - option
       - type
       - description
       - examples
-    * - name
-      - str
-      - Display name
-      - ``"Component Name"``
     * - cpu
       - str
       - CPU limit
@@ -73,7 +69,3 @@ See all available options here:
       - str
       - Accelerator type
       - ``"NVIDIA_TESLA_K80"``, ``"TPU_V3"``, ...
-    * - caching
-      - bool
-      - Whether or not to enable caching
-      - ``True`` or ``False``

@@ -2,10 +2,10 @@ from typing import Optional
 
 from kfp.v2 import dsl
 
-from .decorators import override_docstring, spec
+from .decorators import caching, override_docstring
 
 
-@spec(caching=False)
+@caching(False)
 @override_docstring()
 @dsl.component()
 def timestamp(
