@@ -29,9 +29,16 @@ class TestTimestamp:
         assert time_string == "example-20220901000000-results"
 
     @freeze_time("2022-09-01 00:00:00")
+    def test_prefix_and_suffix(self):
+        time_string = components.timestamp.python_func(
+            prefix="example", suffix="results"
+        )
+        assert time_string == "example-20220901000000-results"
+
+    @freeze_time("2022-09-01 00:00:00")
     def test_separator(self):
         time_string = components.timestamp.python_func(
-            prefix="example", postfix="results", separator="/"
+            prefix="example", suffix="results", separator="/"
         )
         assert time_string == "example/20220901000000/results"
 

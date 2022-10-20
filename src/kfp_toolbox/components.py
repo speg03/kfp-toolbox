@@ -1,3 +1,4 @@
+import warnings
 from typing import Optional
 
 from kfp.v2 import dsl
@@ -11,13 +12,14 @@ from .decorators import caching, override_docstring
 def timestamp(
     format: str = "%Y%m%d%H%M%S",
     prefix: Optional[str] = None,
+    suffix: Optional[str] = None,
     postfix: Optional[str] = None,
     separator: str = "-",
     tz_offset: int = 0,
 ) -> str:
     """Generate a time string in a specified format.
 
-    It adds a :attr:`prefix` or :attr:`postfix` to the time string generated from the
+    It adds a :attr:`prefix` or :attr:`suffix` to the time string generated from the
     format, along with a :attr:`separator`. :attr:`tz_offset` can be specified to
     represent a time zone other than UTC.
 
@@ -29,15 +31,20 @@ def timestamp(
             as a format string are output as is. Defaults to "%Y%m%d%H%M%S".
         prefix (Optional[str], optional): A prefix string to be prepended to the format
             string. Defaults to None.
-        postfix (Optional[str], optional): A postfix string to be added after the
+        suffix (Optional[str], optional): A suffix string to be added after the
             format string. Defaults to None.
+        postfix (Optional[str], optional): DEPRECATED: Use :attr:`suffix` instead.
+            A postfix string to be added after the format string. Defaults to None.
         separator (str, optional): Separator to be added between the format string,
-            prefix and postfix. Defaults to "-".
+            prefix and suffix. Defaults to "-".
         tz_offset (int, optional): Time zone offset specified in hours. Defaults to 0.
 
     Returns:
         str: The current time string represented by a format string. A prefix and
-        postfix string separated by a separator is appended.
+        suffix string separated by a separator is appended.
+
+    .. deprecated:: 0.5.0
+        :attr:`postfix` argument is deprecated. Use :attr:`suffix` instead.
 
     """
 
@@ -48,5 +55,11 @@ def timestamp(
     if prefix:
         time_string = separator.join([prefix, time_string])
     if postfix:
-        time_string = separator.join([time_string, postfix])
+        warnings.warn(
+            "`postfix` argument is deprecated. Use `suffix` instead.",
+            DeprecationWarning,
+        )
+        suffix = postfix
+    if suffix:
+        time_string = separator.join([time_string, suffix])
     return time_string
