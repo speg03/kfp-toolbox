@@ -52,7 +52,7 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip setuptools wheel
-          python3 -m pip install "$(ls ./dist/*-py3-none-any.whl | tail -1)[test]"
+          python3 -m pip install "$(ls ./dist/*-py3-none-any.whl | tail -1)[tests]"
 
       - name: Test
         run: make test
