@@ -25,11 +25,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-dynamic = ["version", "dependencies"]
-
-[project.optional-dependencies]
-test = ["pytest", "pytest-cov", "freezegun"]
-docs = ["sphinx", "furo", "sphinx-autobuild"]
+dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [project.scripts]
 kfp-toolbox = "kfp_toolbox.cli:app"
@@ -45,7 +41,11 @@ source = "vcs"
 version-file = "src/kfp_toolbox/versions.py"
 
 [tool.hatch.metadata.hooks.requirements_txt]
-filename = "requirements.txt"
+files = ["requirements/main.txt"]
+
+[tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
+tests = ["requirements/tests.txt"]
+docs = ["requirements/docs.txt"]
 
 [tool.isort]
 profile = "black"
