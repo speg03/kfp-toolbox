@@ -1,3 +1,5 @@
+# "_version.py" is automatically generated when building a package.
+from ._version import __version__  # noqa: F401
 from .decorators import (  # noqa: F401
     caching,
     container_spec,
@@ -5,6 +7,3 @@ from .decorators import (  # noqa: F401
     override_docstring,
     spec,
 )
-
-# "versions.py" is automatically generated when building a package.
-from .versions import __version__  # noqa: F401
