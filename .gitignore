@@ -130,4 +130,4 @@ dmypy.json
 
 # Auto-generated
 docs/api/*.rst
-src/kfp_toolbox/versions.py
+src/kfp_toolbox/_version.py
