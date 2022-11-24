@@ -5,9 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "kfp-toolbox"
 description = "The toolbox for kfp (Kubeflow Pipelines SDK)"
-authors = [
-    { name = "Takahiro Yano", email = "speg03@gmail.com" },
-]
+authors = [{ name = "Takahiro Yano", email = "speg03@gmail.com" }]
 
 readme = "README.md"
 license = "MIT"
@@ -30,16 +28,8 @@ classifiers = [
 dynamic = ["version", "dependencies"]
 
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "freezegun",
-]
-docs = [
-    "sphinx",
-    "furo",
-    "sphinx-autobuild",
-]
+test = ["pytest", "pytest-cov", "freezegun"]
+docs = ["sphinx", "furo", "sphinx-autobuild"]
 
 [project.scripts]
 kfp-toolbox = "kfp_toolbox.cli:app"
