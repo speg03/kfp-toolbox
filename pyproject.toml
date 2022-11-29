@@ -35,7 +35,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-cov", "freezegun"]
+tests = ["pytest", "pytest-cov", "freezegun"]
 docs = ["sphinx", "furo", "sphinx-autobuild"]
 
 [project.scripts]
