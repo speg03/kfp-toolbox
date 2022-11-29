@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs", "hatch-requirements-txt"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -25,7 +25,18 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-dynamic = ["version", "dependencies", "optional-dependencies"]
+dynamic = ["version"]
+
+dependencies = [
+    "kfp~=1.8",
+    "google-cloud-aiplatform~=1.15",
+    "typer>=0.4, <1.0",
+    "pyyaml>=5.3",
+]
+
+[project.optional-dependencies]
+tests = ["pytest", "pytest-cov", "freezegun"]
+docs = ["sphinx", "furo", "sphinx-autobuild"]
 
 [project.scripts]
 kfp-toolbox = "kfp_toolbox.cli:app"
@@ -39,13 +50,6 @@ source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/kfp_toolbox/_version.py"
-
-[tool.hatch.metadata.hooks.requirements_txt]
-files = ["requirements/main.txt"]
-
-[tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
-tests = ["requirements/tests.txt"]
-docs = ["requirements/docs.txt"]
 
 [tool.isort]
 profile = "black"
