@@ -5,7 +5,7 @@ clean:
 	rm -rf ./dist ./docs/_build ./docs/api/*.rst
 
 requirements:
-	pip-compile --output-file=requirements.txt --resolver=backtracking pyproject.toml
+	pip-compile --upgrade --output-file=requirements.txt --resolver=backtracking pyproject.toml
 
 lint:
 	pre-commit run --all-files
