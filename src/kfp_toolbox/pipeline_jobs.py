@@ -1,39 +1,5 @@
 import os
-import warnings
 from typing import Any, Mapping, Optional, Union
-
-from . import pipeline_jobs, pipeline_parser
-from .pipeline_parser import Parameter, ParameterValue, Pipeline  # noqa: F401
-
-
-def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:
-    """Load a pipeline object from the pipeline file.
-
-    Load a :class:`Pipeline` object from a pre-compiled file that represents
-    the pipeline.
-
-    Args:
-        filepath (Union[str, os.PathLike]): The path of the pre-compiled file that
-            represents the pipeline.
-
-    Raises:
-        ValueError: If the :attr:`filepath` file has an invalid schema.
-
-    Returns:
-        Pipeline: An object that represents the pipeline.
-
-    .. deprecated:: 0.6.0
-        Use :func:`.pipeline_parser.parse_pipeline_package` instead.
-
-    """
-
-    warnings.warn(
-        "`load_pipeline_from_file is deprecated."
-        " Use `pipeline_parser.parse_pipeline_package` instead.",
-        DeprecationWarning,
-    )
-
-    return pipeline_parser.parse_pipeline_package(filepath=filepath)
 
 
 def submit_pipeline_job(
@@ -103,34 +69,45 @@ def submit_pipeline_job(
             to which the job should be peered. Used only for Vertex AI Pipelines.
             Defaults to None.
 
-    .. deprecated:: 0.6.0
-        Use :func:`.pipeline_jobs.submit_pipeline_job` instead.
-
     """
 
-    warnings.warn(
-        "`pipelines.submit_pipeline_job` is deprecated."
-        " Use `pipeline_jobs.submit_pipeline_job` instead.",
-        DeprecationWarning,
-    )
+    pipeline_file_str = os.fspath(pipeline_file)
 
-    return pipeline_jobs.submit_pipeline_job(
-        pipeline_file=pipeline_file,
-        endpoint=endpoint,
-        iap_client_id=iap_client_id,
-        api_namespace=api_namespace,
-        other_client_id=other_client_id,
-        other_client_secret=other_client_secret,
-        arguments=arguments,
-        run_name=run_name,
-        experiment_name=experiment_name,
-        namespace=namespace,
-        pipeline_root=pipeline_root,
-        enable_caching=enable_caching,
-        service_account=service_account,
-        encryption_spec_key_name=encryption_spec_key_name,
-        labels=labels,
-        project=project,
-        location=location,
-        network=network,
-    )
+    if endpoint:  # Kubeflow Pipelines
+        import kfp
+
+        client = kfp.Client(
+            host=endpoint,
+            client_id=iap_client_id,
+            namespace=api_namespace,
+            other_client_id=other_client_id,
+            other_client_secret=other_client_secret,
+        )
+        client.create_run_from_pipeline_package(
+            pipeline_file=pipeline_file_str,
+            arguments=arguments,  # type: ignore
+            run_name=run_name,
+            experiment_name=experiment_name,
+            namespace=namespace,
+            pipeline_root=pipeline_root,
+            enable_caching=enable_caching,
+            service_account=service_account,
+        )
+    else:  # Vertex AI Pipelines
+        from google.cloud import aiplatform
+
+        job = aiplatform.PipelineJob(
+            display_name=None,  # type: ignore  # will be generated
+            template_path=pipeline_file_str,
+            job_id=run_name,
+            pipeline_root=pipeline_root,
+            parameter_values=arguments,  # type: ignore
+            enable_caching=enable_caching,
+            encryption_spec_key_name=encryption_spec_key_name,
+            labels=labels,  # type: ignore
+            project=project,
+            location=location,
+        )
+        job.submit(
+            service_account=service_account, network=network, experiment=experiment_name
+        )
