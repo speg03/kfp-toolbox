@@ -2,8 +2,29 @@ import os
 import warnings
 from typing import Any, Mapping, Optional, Union
 
+from kfp.v2 import dsl
+
 from . import pipeline_jobs, pipeline_parser
+from .components import timestamp
 from .pipeline_parser import Parameter, ParameterValue, Pipeline  # noqa: F401
+
+
+@dsl.pipeline(name="timestamp-pipeline")
+def timestamp_pipeline(
+    format: str = "%Y%m%d%H%M%S",
+    prefix: str = "",
+    suffix: str = "",
+    separator: str = "-",
+    tz_offset: int = 0,
+):
+    time_string = timestamp(
+        format=format,
+        prefix=prefix,
+        suffix=suffix,
+        separator=separator,
+        tz_offset=tz_offset,
+    )
+    return time_string
 
 
 def load_pipeline_from_file(filepath: Union[str, os.PathLike]) -> Pipeline:

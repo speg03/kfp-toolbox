@@ -11,7 +11,22 @@ from kfp_toolbox.pipelines import (
     Parameter,
     load_pipeline_from_file,
     submit_pipeline_job,
+    timestamp_pipeline,
 )
+
+
+class TestTimestampPipeline:
+    def test_v1(self, tmp_path):
+        pipeline_path = os.fspath(tmp_path / "pipeline.yaml")
+        compiler_v1.Compiler(mode=dsl_v1.PipelineExecutionMode.V2_COMPATIBLE).compile(
+            pipeline_func=timestamp_pipeline, package_path=pipeline_path
+        )
+
+    def test(self, tmp_path):
+        pipeline_path = os.fspath(tmp_path / "pipeline.json")
+        compiler.Compiler().compile(
+            pipeline_func=timestamp_pipeline, package_path=pipeline_path
+        )
 
 
 class TestLoadPipelineFromFile:
