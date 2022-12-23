@@ -32,7 +32,7 @@ class TestApp:
 
 
 class TestSubmit:
-    @patch("kfp_toolbox.pipelines.submit_pipeline_job")
+    @patch("kfp_toolbox.pipeline_jobs.submit_pipeline_job")
     def test(self, mock_submit_pipeline_job, tmp_path):
         @dsl.component()
         def echo() -> str:
@@ -83,7 +83,7 @@ class TestSubmit:
             network=None,
         )
 
-    @patch("kfp_toolbox.pipelines.submit_pipeline_job")
+    @patch("kfp_toolbox.pipeline_jobs.submit_pipeline_job")
     def test_caching(self, mock_submit_pipeline_job, tmp_path):
         @dsl.component()
         def echo() -> str:
@@ -124,7 +124,7 @@ class TestSubmit:
             network=None,
         )
 
-    @patch("kfp_toolbox.pipelines.submit_pipeline_job")
+    @patch("kfp_toolbox.pipeline_jobs.submit_pipeline_job")
     def test_no_caching(self, mock_submit_pipeline_job, tmp_path):
         @dsl.component()
         def echo() -> str:

@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import typer
 
-from . import __version__, pipelines
+from . import __version__, pipeline_jobs, pipeline_parser
 
 app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
@@ -71,7 +71,7 @@ def submit(
     parser = argparse.ArgumentParser(add_help=False, usage=argparse.SUPPRESS)
     parameters_group = parser.add_argument_group("Pipeline parameters")
     if pipeline_file:
-        pipeline = pipelines.load_pipeline_from_file(pipeline_file)
+        pipeline = pipeline_parser.parse_pipeline_package(pipeline_file)
         for parameter in pipeline.parameters:
             sanitized_name = parameter.name.replace("_", "-").strip("-")
             required = parameter.default is None
@@ -108,7 +108,7 @@ def submit(
     args = parser.parse_args(pipeline_parameters or [])
     arguments_dict = vars(args)
 
-    pipelines.submit_pipeline_job(
+    pipeline_jobs.submit_pipeline_job(
         pipeline_file=pipeline_file,
         endpoint=endpoint,
         iap_client_id=iap_client_id,

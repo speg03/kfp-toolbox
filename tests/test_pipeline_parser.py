@@ -1,35 +1,15 @@
 import os
 from typing import Dict, List
-from unittest.mock import patch
 
 import pytest
 from kfp import compiler as compiler_v1
 from kfp import dsl as dsl_v1
 from kfp.v2 import compiler, dsl
 
-from kfp_toolbox.pipelines import (
-    Parameter,
-    load_pipeline_from_file,
-    submit_pipeline_job,
-    timestamp_pipeline,
-)
+from kfp_toolbox.pipeline_parser import Parameter, parse_pipeline_package
 
 
-class TestTimestampPipeline:
-    def test_v1(self, tmp_path):
-        pipeline_path = os.fspath(tmp_path / "pipeline.yaml")
-        compiler_v1.Compiler(mode=dsl_v1.PipelineExecutionMode.V2_COMPATIBLE).compile(
-            pipeline_func=timestamp_pipeline, package_path=pipeline_path
-        )
-
-    def test(self, tmp_path):
-        pipeline_path = os.fspath(tmp_path / "pipeline.json")
-        compiler.Compiler().compile(
-            pipeline_func=timestamp_pipeline, package_path=pipeline_path
-        )
-
-
-class TestLoadPipelineFromFile:
+class TestParsePipelinePackage:
     def test_v1(self, tmp_path):
         @dsl.component()
         def echo() -> str:
@@ -51,7 +31,7 @@ class TestLoadPipelineFromFile:
         compiler_v1.Compiler(mode=dsl_v1.PipelineExecutionMode.V2_COMPATIBLE).compile(
             pipeline_func=echo_pipeline, package_path=pipeline_path
         )
-        pipeline = load_pipeline_from_file(pipeline_path)
+        pipeline = parse_pipeline_package(pipeline_path)
 
         no_default_param = Parameter(name="no_default_param", type=int)
         int_param = Parameter(name="int_param", type=int, default=1)
@@ -92,7 +72,7 @@ class TestLoadPipelineFromFile:
         compiler.Compiler().compile(
             pipeline_func=echo_pipeline, package_path=pipeline_path
         )
-        pipeline = load_pipeline_from_file(pipeline_path)
+        pipeline = parse_pipeline_package(pipeline_path)
 
         no_default_param = Parameter(name="no_default_param", type=int)
         int_param = Parameter(name="int_param", type=int, default=1)
@@ -129,7 +109,7 @@ class TestLoadPipelineFromFile:
         compiler_v1.Compiler(mode=dsl_v1.PipelineExecutionMode.V2_COMPATIBLE).compile(
             pipeline_func=echo_pipeline, package_path=pipeline_path
         )
-        pipeline = load_pipeline_from_file(pipeline_path)
+        pipeline = parse_pipeline_package(pipeline_path)
 
         int_param = Parameter(name="int_param", type=int, default=0)
         float_param = Parameter(name="float_param", type=float, default=0.0)
@@ -158,7 +138,7 @@ class TestLoadPipelineFromFile:
         compiler.Compiler().compile(
             pipeline_func=echo_pipeline, package_path=pipeline_path
         )
-        pipeline = load_pipeline_from_file(pipeline_path)
+        pipeline = parse_pipeline_package(pipeline_path)
 
         int_param = Parameter(name="int_param", type=int, default=0)
         float_param = Parameter(name="float_param", type=float, default=0.0)
@@ -184,7 +164,7 @@ class TestLoadPipelineFromFile:
             pipeline_func=echo_pipeline, package_path=pipeline_path
         )
 
-        pipeline = load_pipeline_from_file(pipeline_path)
+        pipeline = parse_pipeline_package(pipeline_path)
         assert pipeline.name == "echo-pipeline"
         assert len(pipeline.parameters) == 0
 
@@ -202,7 +182,7 @@ class TestLoadPipelineFromFile:
             pipeline_func=echo_pipeline, package_path=pipeline_path
         )
 
-        pipeline = load_pipeline_from_file(pipeline_path)
+        pipeline = parse_pipeline_package(pipeline_path)
         assert pipeline.name == "echo-pipeline"
         assert len(pipeline.parameters) == 0
 
@@ -213,7 +193,7 @@ class TestLoadPipelineFromFile:
             f.write(pipeline)
 
         with pytest.raises(ValueError) as exc_info:
-            load_pipeline_from_file(pipeline_path)
+            parse_pipeline_package(pipeline_path)
 
         assert str(exc_info.value) == f"invalid schema: {pipeline_path}"
 
@@ -228,65 +208,6 @@ class TestLoadPipelineFromFile:
             f.write(pipeline)
 
         with pytest.raises(ValueError) as exc_info:
-            load_pipeline_from_file(pipeline_path)
+            parse_pipeline_package(pipeline_path)
 
         assert str(exc_info.value) == f"invalid schema: {pipeline_path}"
-
-
-class TestSubmitPipelineJob:
-    @patch("google.cloud.aiplatform.PipelineJob")
-    @patch("kfp.Client")
-    def test_no_endpoints(self, mock_kfp, mock_aip):
-        submit_pipeline_job(
-            pipeline_file="/path/to/file",
-            arguments={"param": 1},
-            run_name="test-run",
-            experiment_name="test-experiment",
-        )
-
-        mock_kfp.assert_not_called()
-        mock_aip.assert_called_once_with(
-            display_name=None,
-            template_path="/path/to/file",
-            job_id="test-run",
-            pipeline_root=None,
-            parameter_values={"param": 1},
-            enable_caching=None,
-            encryption_spec_key_name=None,
-            labels=None,
-            project=None,
-            location=None,
-        )
-        mock_aip.return_value.submit.assert_called_once_with(
-            service_account=None, network=None, experiment="test-experiment"
-        )
-
-    @patch("google.cloud.aiplatform.PipelineJob")
-    @patch("kfp.Client")
-    def test_endpoint(self, mock_kfp, mock_aip):
-        submit_pipeline_job(
-            pipeline_file="/path/to/file",
-            arguments={"param": 1},
-            run_name="test-run",
-            experiment_name="test-experiment",
-            endpoint="http://localhost:8080",
-        )
-
-        mock_aip.assert_not_called()
-        mock_kfp.assert_called_once_with(
-            host="http://localhost:8080",
-            client_id=None,
-            namespace="kubeflow",
-            other_client_id=None,
-            other_client_secret=None,
-        )
-        mock_kfp.return_value.create_run_from_pipeline_package.assert_called_once_with(
-            pipeline_file="/path/to/file",
-            arguments={"param": 1},
-            run_name="test-run",
-            experiment_name="test-experiment",
-            namespace=None,
-            pipeline_root=None,
-            enable_caching=None,
-            service_account=None,
-        )
