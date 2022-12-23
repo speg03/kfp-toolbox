@@ -40,6 +40,7 @@ class Pipeline:
 
     name: str
     parameters: Sequence[Parameter]
+    spec: Mapping[str, Any]
 
 
 def _type_function_from_name(type_name: str) -> Callable:
@@ -83,7 +84,7 @@ def _create_pipeline(pipeline_spec: Mapping[str, Any]) -> Pipeline:
             parameter.default = _actual_parameter_value(key, value)
         parameters.append(parameter)
 
-    return Pipeline(name=pipeline_name, parameters=parameters)
+    return Pipeline(name=pipeline_name, parameters=parameters, spec=pipeline_spec)
 
 
 def _create_v1_pipeline(pipeline_spec: Mapping[str, Any]) -> Pipeline:
@@ -104,7 +105,7 @@ def _create_v1_pipeline(pipeline_spec: Mapping[str, Any]) -> Pipeline:
             parameter.default = _actual_parameter_value(item["type"], item["default"])
         parameters.append(parameter)
 
-    return Pipeline(name=pipeline_name, parameters=parameters)
+    return Pipeline(name=pipeline_name, parameters=parameters, spec=pipeline_spec)
 
 
 def parse_pipeline_package(filepath: Union[str, os.PathLike]) -> Pipeline:
