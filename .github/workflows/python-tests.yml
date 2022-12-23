@@ -17,8 +17,11 @@ jobs:
           python-version: "3.x"
           cache: pip
 
+      - name: Install dependencies
+        run: python3 -m pip install build
+
       - name: Build
-        run: make build
+        run: make dist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -51,7 +54,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip setuptools wheel
           python3 -m pip install -r ./requirements.txt
-          python3 -m pip install "$(ls ./dist/*-py3-none-any.whl | tail -1)[tests]"
+          python3 -m pip install "$(ls ./dist/*-py3-none-any.whl | tail -1)[test]"
 
       - name: Test
         run: make test

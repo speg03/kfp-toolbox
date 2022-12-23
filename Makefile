@@ -1,15 +1,17 @@
-.PHONY: all clean build lint test html livehtml
+.PHONY: all clean requirements lint test dist html livehtml
 
-all: build html
+all: dist html
 clean:
 	rm -rf ./dist ./docs/_build ./docs/api/*.rst
+
+requirements:
+	pip-compile --upgrade --output-file=requirements.txt --resolver=backtracking pyproject.toml
 
 lint:
 	pre-commit run --all-files
 test:
 	pytest -v ./tests
-build:
-	python3 -m pip install build
+dist:
 	python3 -m build
 
 html:
