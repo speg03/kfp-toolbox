@@ -51,8 +51,5 @@ source = "vcs"
 [tool.hatch.build.hooks.vcs]
 version-file = "src/kfp_toolbox/_version.py"
 
-[tool.isort]
-profile = "black"
-
 [tool.pytest.ini_options]
 addopts = "--cov=kfp_toolbox --cov-report=term-missing --cov-report=xml"
