@@ -2,8 +2,10 @@ name: Python Tests
 
 on:
   push:
-    tags: ["v[0-9]+.[0-9]+.[0-9]+**"]
+    branches: [main]
   pull_request:
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -51,10 +53,7 @@ jobs:
           path: ./dist
 
       - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip setuptools wheel
-          python3 -m pip install -r ./requirements.txt
-          python3 -m pip install "$(ls ./dist/*-py3-none-any.whl | tail -1)[test]"
+        run: python3 -m pip install "$(find ./dist -name '*-py3-none-any.whl' | tail -1)[test]"
 
       - name: Test
         run: make test
@@ -64,7 +63,12 @@ jobs:
 
   publish:
     needs: test
-    if: github.ref_type == 'tag'
+    if: github.event_name == 'release' && github.event.action == 'published'
+    permissions:
+      id-token: write
+    environment:
+      name: release
+      url: https://pypi.org/project/${{ github.event.repository.name }}/
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
@@ -75,22 +79,3 @@ jobs:
 
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
-
-  release:
-    needs: publish
-    if: github.ref_type == 'tag'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Release
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: "${{ github.ref_name }}",
-              name: "${{ github.ref_name }}",
-              generate_release_notes: true
-            })
