@@ -117,6 +117,20 @@ def compile_pipeline_function(
     type_check: bool = True,
     legacy_mode: Optional[str] = None,
 ) -> None:
+    """Compile a pipeline function to a pipeline package.
+
+    Args:
+        package_path (str): The path to the output pipeline package.
+        pyfile (str, optional): The path to the Python file containing the pipeline
+            function.
+        module (str, optional): The name of the Python module containing the pipeline
+            function.
+        function_name (str, optional): The name of the pipeline function.
+        pipeline_parameters (Mapping[str, Any], optional): The pipeline parameters.
+        type_check (bool, optional): Whether to perform type checking.
+        legacy_mode (str, optional): The legacy mode. Must be one of 'V1_LEGACY',
+            'V2_COMPATIBLE', or 'V2_ENGINE'.
+    """
     if legacy_mode:
         _compile_pipeline_function_v1(
             package_path=package_path,

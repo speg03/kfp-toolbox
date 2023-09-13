@@ -9,6 +9,6 @@ extensions = [
 ]
 
 language = "en"
-exclude_patterns = ["_build"]
+exclude_patterns = ["_build", "api/kfp_toolbox_testing*"]
 
 html_theme = "furo"
