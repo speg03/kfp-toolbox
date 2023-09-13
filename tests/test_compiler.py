@@ -88,6 +88,17 @@ class TestCompilePipelineFunctionFromModule:
             " has no function 'invalid_pipeline'."
         )
 
+    def test_pipeline_function_name_needed_in_module(self):
+        with pytest.raises(ValueError) as exc_info:
+            compiler.compile_pipeline_function(
+                package_path="path/to/pipeline.json",
+                module="kfp_toolbox_testing.pipelines.multiple_pipelines",
+            )
+        assert str(exc_info.value) == (
+            "The 'kfp_toolbox_testing.pipelines.multiple_pipelines' module has several"
+            " pipeline functions. You must specify the function_name."
+        )
+
     def test_no_pipeline_functions_in_module(self):
         with pytest.raises(ValueError) as exc_info:
             compiler.compile_pipeline_function(
